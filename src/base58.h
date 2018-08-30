@@ -1,15 +1,7 @@
-// Copyright (c) 2009 Satoshi Nakamoto
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
-
-
 //
-// Why base-58 instead of standard base-64 encoding?
-// - Don't want 0OIl characters that look the same in some fonts and
-//      could be used to create visually identical looking account numbers.
-// - A string with non-alphanumeric characters is not as easily accepted as an account number.
-// - E-mail usually won't line-break if there's no punctuation to break at.
-// - Doubleclicking selects the whole number as one word if it's all alphanumeric.
+//为什么用base58取代base64?
+//应为0OIl在某些字体看起来非常相似，创建了一些看起来非常相似的账号
+//特殊符号的存在会使得双击复制失效，所以不使用除了数字和字母的符号
 //
 
 
@@ -22,7 +14,7 @@ inline string EncodeBase58(const unsigned char* pbegin, const unsigned char* pen
     CBigNum bn58 = 58;
     CBigNum bn0 = 0;
 
-    // Convert big endian data to little endian
+    // 大端数据转为小端
     // Extra zero at the end make sure bignum will interpret as a positive number
     vector<unsigned char> vchTmp(pend-pbegin+1, 0);
     reverse_copy(pbegin, pend, vchTmp.begin());
