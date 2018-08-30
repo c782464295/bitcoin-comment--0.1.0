@@ -256,10 +256,11 @@ public:
 
 
 
-
+//继承CDB，处理交易数据
 class CTxDB : public CDB
 {
 public:
+    //构造函数，对blkindex.dat文件建立pdb对象
     CTxDB(const char* pszMode="r+", bool fTxn=false) : CDB(!fClient ? "blkindex.dat" : NULL, pszMode, fTxn) { }
 private:
     CTxDB(const CTxDB&);
@@ -285,7 +286,7 @@ public:
 
 
 
-
+//记录比特币客户端中的用户数据
 class CReviewDB : public CDB
 {
 public:
@@ -311,7 +312,7 @@ public:
 
 
 
-
+//不详
 class CMarketDB : public CDB
 {
 public:
@@ -324,7 +325,7 @@ private:
 
 
 
-
+//地址数据
 class CAddrDB : public CDB
 {
 public:
@@ -342,7 +343,7 @@ bool LoadAddresses();
 
 
 
-
+//钱包相关数据
 class CWalletDB : public CDB
 {
 public:
