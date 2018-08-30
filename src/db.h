@@ -27,10 +27,10 @@ protected:
     Db* pdb;
     //数据库地址
     string strFile;
-    //DBD中事务（Transaction）的句柄(Handle)
+    //DBD中事务（Transaction）的句柄(Handle)数组vTxn
     vector<DbTxn*> vTxn;
     //explicit抑制内置类型隐式转换
-    //参数：数据库路径，权限 默认为r+，fTxn
+    //参数：数据库路径，读取模式 默认为r+，fTxn
     explicit CDB(const char* pszFile, const char* pszMode="r+", bool fTxn=false);
     //析构函数，关闭数据库连接
     ~CDB() { Close(); }
@@ -39,7 +39,7 @@ public:
     void Close();
 private:
     CDB(const CDB&);
-    //重载操作符，即CBD1=CBD2进行地址复制
+    //重载操作符，只是声明，未做具体实现
     void operator=(const CDB&);
 
 protected:
