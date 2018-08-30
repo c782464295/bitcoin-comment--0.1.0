@@ -78,7 +78,7 @@ bool SendMoney(CScript scriptPubKey, int64 nValue, CWalletTx& wtxNew);
 
 
 
-
+//用于记录某笔存储在blocks/blk*.dat文件内的交易的数据位置
 class CDiskTxPos
 {
 public:
@@ -99,9 +99,10 @@ public:
     }
 
     IMPLEMENT_SERIALIZE( READWRITE(FLATDATA(*this)); )
+    //通过判断nFile是否为-1.来判断CDiskTxPos是否有效
     void SetNull() { nFile = -1; nBlockPos = 0; nTxPos = 0; }
     bool IsNull() const { return (nFile == -1); }
-
+    //操作符重载
     friend bool operator==(const CDiskTxPos& a, const CDiskTxPos& b)
     {
         return (a.nFile     == b.nFile &&
@@ -145,12 +146,14 @@ public:
 
 
 
-
+//某个输出的指针
 class COutPoint
 {
 public:
-    uint256 hash; // 交易对应的hash
-    unsigned int n; // 交易对应的第几个输出
+    uint256 hash; // 是指产生该输出的交易TxPrev的256位哈希值
+	//这里的类uint256在uint256.h中被定义，类中包含一个数组unsigned int pn[8]。这个256位的哈希值正是存储在这个数组中。
+    unsigned int n; // 指该输出在交易TxPrev中，位于输出数组的序号值。
+	//对于Coinbase交易，n取unsigned int类型的最大值，即n = 2^32 - 1 = 4294967295。
 
     COutPoint() { SetNull(); }
     COutPoint(uint256 hashIn, unsigned int nIn) { hash = hashIn; n = nIn; }
@@ -192,12 +195,13 @@ public:
 // transaction's output that it claims and a signature that matches the
 // output's public key.
 //
+//任何一笔非CoinBase交易中的任何一笔输入，都应当来自于一个已经存在且未被花费的输出
 class CTxIn
 {
 public:
-    COutPoint prevout; // 前一个交易对应的输出（叫一个交易对应的hash值和对应的第几个输出）
+    COutPoint prevout; // 前一个交易对应的输出（叫一个交易对应的hash值和对应的第几个输出） prevout指出了本CTxIn的来源
     CScript scriptSig; // 输入脚本对应的签名
-    unsigned int nSequence;// 主要是用于判断相同输入的交易哪一个更新，值越大越新
+    unsigned int nSequence;// 主要是用于判断相同输入的交易哪一个更新，值越大越新 最大值0xffffffff
 
     CTxIn()
     {
@@ -224,7 +228,8 @@ public:
         READWRITE(scriptSig);
         READWRITE(nSequence);
     )
-    // 交易对应nSequence是最大，已经是最新了，是最终的
+    // 交易对应nSequence是最大，已经是最新了，是最终的 
+    //即在nSequence值达到最大时，认为该交易输入达到了最终状态。
     bool IsFinal() const
     {
         return (nSequence == UINT_MAX);
@@ -275,10 +280,13 @@ public:
 // An output of a transaction.  It contains the public key that the next input
 // must be able to sign with to claim it.
 //
+//某笔交易的一个输出
 class CTxOut
 {
 public:
-    int64 nValue; // 交易输出对应的金额
+    int64 nValue; // 交易输出对应的金额 int64实际上是long long类型
+	//其最大值大于1×10^18。而比特币的最小单位是聪(satoshi)，且1 BTC = 1×10^8 satoshi，则比特币的总量为2.1×10^7 BTC = 2.1×10^15 satoshi。
+	//可见，该数据类型足以用最小单位记录比特币的数量。
     CScript scriptPubKey; // 交易对应的公钥
 
 public:
@@ -298,7 +306,7 @@ public:
         READWRITE(nValue);
         READWRITE(scriptPubKey);
     )
-
+    //nValue的值是否为-1作为一个CTxOut对象是否有效的标记。
     void SetNull()
     {
         nValue = -1;
@@ -360,14 +368,19 @@ public:
 // The basic transaction that is broadcasted on the network and contained in
 // blocks.  A transaction can contain multiple inputs and outputs.
 //
+//每一笔交易可以由多个输入(CTxIn)和输出(CTxOut)。
 class CTransaction
 {
 public:
     int nVersion; // 交易的版本号，用于升级
-    vector<CTxIn> vin; // 交易对应的输入
-    vector<CTxOut> vout; // 交易对应的输出
+    vector<CTxIn> vin; // 交易对应的输入数组
+    vector<CTxOut> vout; // 交易对应的输出数组
     int nLockTime; // 交易对应的锁定时间
-
+//nLockTime == 0时，交易被立即打包。
+//0 < nLockTime < 500000000时，若当前块高度大于nLockTime，则允许打包。
+//nLockTime >= 500000000时，nLockTime代表一个UNIX时间戳，若当前时间大于改时间戳，则允许打包。
+//但是，并非为交易设置nLockTime就一定能够被延后打包。如果一笔交易中，所有输入(CTxIn)都达到了Final状态，
+//即nSequence都被设置为了0xffffffff，那么该交易也会被立即打包。
 
     CTransaction()
     {
@@ -405,6 +418,7 @@ public:
     bool IsFinal() const
     {
         // 如果锁定时间等于0或者锁定时间小于主链的长度，则说明是最终的交易
+	//这里nLockTime并未做UNIX时间戳使用，是因为初版比特币代码发布时，协议中还只是用了区块高度用来做交易延迟
         if (nLockTime == 0 || nLockTime < nBestHeight)
             return true;
         foreach(const CTxIn& txin, vin)
@@ -412,7 +426,13 @@ public:
                 return false;
         return true;
     }
-	// 对比相同的交易哪一个更新点：对于相同输入的交易判断哪一个更新
+	//比特币中引入这种设计，可以满足一些特殊的场景。
+	//例如在商业合作中，一笔交易将包含多个人的签名，他们预先构造并广播交易后，还有机会在延迟打包前用新的交易替换原交易。
+	//而在更为复杂的场景下，如果对单个输入(CTxIn)已经达成最终共识，就可以重新签名，
+	//将该输入的nSequence设置为0xffffffff；当一笔交易中的所有输入都已达成最终共识，
+	//则继续等待延迟打包就不再有意义，而可以直接将交易打包进区块了。
+	
+    // 对比相同的交易哪一个更新点：对于相同输入的交易判断哪一个更新
     bool IsNewerThan(const CTransaction& old) const
     {
         if (vin.size() != old.vin.size())
@@ -529,7 +549,7 @@ public:
         return (1 + (int64)nBytes / 1000) * CENT;
     }
 
-	// 从硬盘中进行读取
+    //一个CTransaction对象是利用成员函数ReadFromDisk来从硬盘中读取并构造交易对象的
     bool ReadFromDisk(CDiskTxPos pos, FILE** pfileRet=NULL)
     {
         CAutoFile filein = OpenBlockFile(pos.nFile, 0, pfileRet ? "rb+" : "rb");
@@ -772,6 +792,7 @@ public:
 // used as a flag, but having the location is very helpful for debugging.
 //
 // 交易索引---每一个交易对应一个索引
+//在内存中存储某笔交易在硬盘中的pos，以及引用了该笔交易的输出的哪些交易在硬盘中的位置vSpent。从而方便调试。
 class CTxIndex
 {
 public:
