@@ -40,6 +40,7 @@ instance_of_cdbinit;
 CDB::CDB(const char* pszFile, const char* pszMode, bool fTxn) : pdb(NULL)
 {
     int ret;
+    //如果文件路径为NULL，返回
     if (pszFile == NULL)
         return;
 
@@ -57,8 +58,11 @@ CDB::CDB(const char* pszFile, const char* pszMode, bool fTxn) : pdb(NULL)
     {
         if (!fDbEnvInit)
         {
+            //调用main.cpp中的GetAppDir（）函数获得目录
             string strAppDir = GetAppDir();
+            //目录+\database\作为数据库日志目录
             string strLogDir = strAppDir + "\\database";
+            //若该目录不存在则创建
             _mkdir(strLogDir.c_str());
             printf("dbenv.open strAppDir=%s\n", strAppDir.c_str());
 
@@ -86,18 +90,19 @@ CDB::CDB(const char* pszFile, const char* pszMode, bool fTxn) : pdb(NULL)
         strFile = pszFile;
         ++mapFileUseCount[strFile];
     }
-
+    //创建新的BDB操作对象pdb
     pdb = new Db(&dbenv, 0);
-
+    //打开数据库
     ret = pdb->open(NULL,      // Txn pointer
-                    pszFile,   // Filename
-                    "main",    // Logical db name
-                    DB_BTREE,  // Database type
+                    pszFile,   // 文件名
+                    "main",    // 数据库逻辑名
+                    DB_BTREE,  // 数据库类型 BTree
                     nFlags,    // Flags
                     0);
-
+    //如果打开出错
     if (ret > 0)
     {
+        //删除pdb
         delete pdb;
         pdb = NULL;
         CRITICAL_BLOCK(cs_db)
@@ -111,7 +116,7 @@ CDB::CDB(const char* pszFile, const char* pszMode, bool fTxn) : pdb(NULL)
 
     RandAddSeed();
 }
-
+//关闭数据库
 void CDB::Close()
 {
     if (!pdb)
