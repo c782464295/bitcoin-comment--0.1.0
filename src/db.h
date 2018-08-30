@@ -1,7 +1,4 @@
-// Copyright (c) 2009 Satoshi Nakamoto
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
-
+//导入了Berkeley DB(BDB)相关操作类 是一款Key/Value数据库
 #include <db_cxx.h>
 class CTransaction;
 class CTxIndex;
@@ -22,26 +19,35 @@ extern void DBFlush(bool fShutdown);
 
 
 
-
+//DB类
 class CDB
 {
 protected:
+    //数据库对象指针
     Db* pdb;
+    //数据库地址
     string strFile;
+    //DBD中事务（Transaction）的句柄(Handle)
     vector<DbTxn*> vTxn;
-
+    //explicit抑制内置类型隐式转换
+    //参数：数据库路径，权限 默认为r+，fTxn
     explicit CDB(const char* pszFile, const char* pszMode="r+", bool fTxn=false);
+    //析构函数，关闭数据库连接
     ~CDB() { Close(); }
 public:
+    //关闭连接
     void Close();
 private:
     CDB(const CDB&);
+    //重载操作符，即CBD1=CBD2进行地址复制
     void operator=(const CDB&);
 
 protected:
     template<typename K, typename T>
+    //读操作
     bool Read(const K& key, T& value)
     {
+        //如果pdb为空，直接返回false
         if (!pdb)
             return false;
 
@@ -51,7 +57,7 @@ protected:
         ssKey << key;
         Dbt datKey(&ssKey[0], ssKey.size());
 
-        // Read
+        // 读
         Dbt datValue;
         datValue.set_flags(DB_DBT_MALLOC);
         int ret = pdb->get(GetTxn(), &datKey, &datValue, 0);
@@ -70,6 +76,7 @@ protected:
     }
 
     template<typename K, typename T>
+    //写操作
     bool Write(const K& key, const T& value, bool fOverwrite=true)
     {
         if (!pdb)
@@ -87,7 +94,7 @@ protected:
         ssValue << value;
         Dbt datValue(&ssValue[0], ssValue.size());
 
-        // Write
+        // 写
         int ret = pdb->put(GetTxn(), &datKey, &datValue, (fOverwrite ? 0 : DB_NOOVERWRITE));
 
         // Clear memory in case it was a private key
@@ -117,6 +124,7 @@ protected:
     }
 
     template<typename K>
+    //是否存在
     bool Exists(const K& key)
     {
         if (!pdb)
@@ -133,6 +141,7 @@ protected:
 
         // Clear memory
         memset(datKey.get_data(), 0, datKey.get_size());
+        //不存在返回真，存在返回假
         return (ret == 0);
     }
 
