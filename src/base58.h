@@ -96,7 +96,7 @@ inline bool DecodeBase58(const char* psz, vector<unsigned char>& vchRet)
     reverse_copy(vchTmp.begin(), vchTmp.end(), vchRet.end() - vchTmp.size());
     return true;
 }
-
+// 内联函数的代码会在任何调用它的地方展开
 inline bool DecodeBase58(const string& str, vector<unsigned char>& vchRet)
 {
     return DecodeBase58(str.c_str(), vchRet);
@@ -186,7 +186,7 @@ inline bool IsValidBitcoinAddress(const string& str)
 
 
 
-
+//公钥到地址
 inline string PubKeyToAddress(const vector<unsigned char>& vchPubKey)
 {
     return Hash160ToAddress(Hash160(vchPubKey));
