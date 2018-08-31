@@ -66,7 +66,8 @@ bool AddKey(const CKey& key)
 {
     CRITICAL_BLOCK(cs_mapKeys)
     {
-        mapKeys[key.GetPubKey()] = key.GetPrivKey();
+        // 私钥存储在mapKeys结构中（键为公钥），公钥存储在mapPubKeys结果中（键为公钥HASH）
+	mapKeys[key.GetPubKey()] = key.GetPrivKey();
         mapPubKeys[Hash160(key.GetPubKey())] = key.GetPubKey();
     }
     return CWalletDB().WriteKey(key.GetPubKey(), key.GetPrivKey());
