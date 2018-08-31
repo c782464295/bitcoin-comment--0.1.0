@@ -1,6 +1,3 @@
-// Copyright (c) 2009 Satoshi Nakamoto
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
 #include <vector>
 #include <map>
@@ -29,14 +26,14 @@ static const int VERSION = 101;
 //
 // Templates for serializing to anything that looks like a stream,
 // i.e. anything that supports .read(char*, int) and .write(char*, int)
-//
+// 序列化steam
 
 enum
 {
     // primary actions
-    SER_NETWORK         = (1 << 0),
-    SER_DISK            = (1 << 1),
-    SER_GETHASH         = (1 << 2),
+    SER_NETWORK         = (1 << 0),// 1按2进制左移0位
+    SER_DISK            = (1 << 1),// 1按2进制左移1位，10（2进制），2（10进制）
+    SER_GETHASH         = (1 << 2),// 1按2进制左移2位
 
     // modifiers
     SER_SKIPSIG         = (1 << 16),
