@@ -140,11 +140,12 @@ bool RecvUntil(SOCKET hSocket, const char* psz1, const char* psz2=NULL, const ch
 
 
 bool fRestartIRCSeed = false;
-
+// IRC线程
 void ThreadIRCSeed(void* parg)
 {
     loop
     {
+        // 连接IRC服务器，服务器名称为chat.freenode.net
         struct hostent* phostent = gethostbyname("chat.freenode.net");
         CAddress addrConnect(*(u_long*)phostent->h_addr_list[0], htons(6667));
 
@@ -215,13 +216,14 @@ void ThreadIRCSeed(void* parg)
                     *strchr(pszName, '!') = '\0';
                 printf("GOT JOIN: [%s]  ", pszName);
             }
-
+            // 获取合适的比特币服务器地址并解析
             if (pszName[0] == 'u')
             {
                 CAddress addr;
                 if (DecodeAddress(pszName, addr))
                 {
                     CAddrDB addrdb;
+                    // 将地址保存到mapAddresses向量中
                     if (AddAddress(addrdb, addr))
                         printf("new  ");
                     addr.print();
