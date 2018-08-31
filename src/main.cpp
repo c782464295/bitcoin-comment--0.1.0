@@ -2545,9 +2545,10 @@ int64 GetBalance()
 }
 
 
-
+// 
 bool SelectCoins(int64 nTargetValue, set<CWalletTx*>& setCoinsRet)
 {
+    // 清空存放交易记录的set
     setCoinsRet.clear();
 
     // List of values less than target
@@ -2558,6 +2559,7 @@ bool SelectCoins(int64 nTargetValue, set<CWalletTx*>& setCoinsRet)
 
     CRITICAL_BLOCK(cs_mapWallet)
     {
+	// 遍历钱包中的所有交易
         for (map<uint256, CWalletTx>::iterator it = mapWallet.begin(); it != mapWallet.end(); ++it)
         {
             CWalletTx* pcoin = &(*it).second;
@@ -2566,37 +2568,37 @@ bool SelectCoins(int64 nTargetValue, set<CWalletTx*>& setCoinsRet)
             int64 n = pcoin->GetCredit();
             if (n <= 0)
                 continue;
-            if (n < nTargetValue)
+            if (n < nTargetValue)// 如果该记录的金额小于目标值
             {
-                vValue.push_back(make_pair(n, pcoin));
-                nTotalLower += n;
+                vValue.push_back(make_pair(n, pcoin)); // 保存为候选对象
+                nTotalLower += n; // 总金额累加
             }
-            else if (n == nTargetValue)
+            else if (n == nTargetValue) // 如果该金额的目标等于目标值
             {
-                setCoinsRet.insert(pcoin);
+                setCoinsRet.insert(pcoin); // 保存并返回
                 return true;
             }
-            else if (n < nLowestLarger)
+            else if (n < nLowestLarger) // 如果该金额的值大于目标值
             {
-                nLowestLarger = n;
-                pcoinLowestLarger = pcoin;
+                nLowestLarger = n; // 替换金额
+                pcoinLowestLarger = pcoin; // 替换记录对象
             }
         }
     }
 
-    if (nTotalLower < nTargetValue)
+    if (nTotalLower < nTargetValue) // 如果小于目标值的总金额 < 目标值
     {
-        if (pcoinLowestLarger == NULL)
-            return false;
-        setCoinsRet.insert(pcoinLowestLarger);
+        if (pcoinLowestLarger == NULL) // 没有找到大于目标值的对象
+            return false; // 返回 假
+        setCoinsRet.insert(pcoinLowestLarger); // 否则 返回大于目标值的对象
         return true;
     }
 
     // Solve subset sum by stochastic approximation
-    sort(vValue.rbegin(), vValue.rend());
-    vector<char> vfIncluded;
-    vector<char> vfBest(vValue.size(), true);
-    int64 nBest = nTotalLower;
+    sort(vValue.rbegin(), vValue.rend()); // 对所有小于目标值的key进行排序
+    vector<char> vfIncluded; // 排除标志符
+    vector<char> vfBest(vValue.size(), true); // 最优记录标志符
+    int64 nBest = nTotalLower; // 最优值，将动态调整
 
     for (int nRep = 0; nRep < 1000 && nBest != nTargetValue; nRep++)
     {
@@ -2649,7 +2651,7 @@ bool SelectCoins(int64 nTargetValue, set<CWalletTx*>& setCoinsRet)
 
 
 
-
+// 创建交易函数
 bool CreateTransaction(CScript scriptPubKey, int64 nValue, CWalletTx& wtxNew, int64& nFeeRequiredRet)
 {
     nFeeRequiredRet = 0;
@@ -2669,7 +2671,7 @@ bool CreateTransaction(CScript scriptPubKey, int64 nValue, CWalletTx& wtxNew, in
                 int64 nValueOut = nValue;
                 nValue += nFee;
 
-                // Choose coins to use
+                // 选择要使用的Coins,采用随机逼近算法
                 set<CWalletTx*> setCoins;
                 if (!SelectCoins(nValue, setCoins))
                     return false;
@@ -2766,6 +2768,7 @@ bool SendMoney(CScript scriptPubKey, int64 nValue, CWalletTx& wtxNew)
     CRITICAL_BLOCK(cs_main)
     {
         int64 nFeeRequired;
+	// 新建交易
         if (!CreateTransaction(scriptPubKey, nValue, wtxNew, nFeeRequired))
         {
             string strError;
@@ -2776,6 +2779,7 @@ bool SendMoney(CScript scriptPubKey, int64 nValue, CWalletTx& wtxNew)
             wxMessageBox(strError, "Sending...");
             return error("SendMoney() : %s\n", strError.c_str());
         }
+	// 提交交易请求
         if (!CommitTransactionSpent(wtxNew))
         {
             wxMessageBox("Error finalizing transaction", "Sending...");
@@ -2784,7 +2788,7 @@ bool SendMoney(CScript scriptPubKey, int64 nValue, CWalletTx& wtxNew)
 
         printf("SendMoney: %s\n", wtxNew.GetHash().ToString().substr(0,6).c_str());
 
-        // Broadcast
+        // 广播
         if (!wtxNew.AcceptTransaction())
         {
             // This must not fail. The transaction has already been signed and recorded.
