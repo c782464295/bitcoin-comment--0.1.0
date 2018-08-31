@@ -1,6 +1,3 @@
-// Copyright (c) 2009 Satoshi Nakamoto
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
 
 #if defined(_MSC_VER) || defined(__BORLANDC__)
@@ -126,7 +123,7 @@ public:
 // break is caught with an assertion, but there's no way to detect continue.
 // I'd rather be careful than suffer the other more error prone syntax.
 // The compiler will optimise away all this loop junk.
-#define CRITICAL_BLOCK(cs)     \
+#define CRITICAL_BLOCK(cs)
     for (bool fcriticalblockonce=true; fcriticalblockonce; assert(("break caught by CRITICAL_BLOCK!", !fcriticalblockonce)), fcriticalblockonce=false)  \
     for (CCriticalBlock criticalblock(cs); fcriticalblockonce && (cs.pszFile=__FILE__, cs.nLine=__LINE__, true); fcriticalblockonce=false, cs.pszFile=NULL, cs.nLine=0)
 
