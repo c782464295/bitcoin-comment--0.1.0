@@ -1341,6 +1341,8 @@ void CSendDialog::OnButtonPaste(wxCommandEvent& event)
     }
 }
 
+
+//交易发起
 void CSendDialog::OnButtonSend(wxCommandEvent& event)
 {
     CWalletTx wtx;
@@ -2835,14 +2837,23 @@ void CEditReviewDialog::GetReview(CReview& review)
 // CMyApp
 //
 
-// 定义一个应用（Application）
+// 定义一个应用（Application） & 初始化
 class CMyApp: public wxApp
 {
   public:
     CMyApp(){};
     ~CMyApp(){};
-    bool OnInit();
-    bool OnInit2();
+    bool OnInit();// 初始化入口，OnInit()调用OnInit2()函数
+    bool OnInit2();// OnInit2()函数调用LoadAddresses()加载地址，该函数加载addr.txt和addr.dat文件中其他节点的地址。
+    // OnInit2()函数调用LoadBlockIndex()加载区块，该函数默认加载blkindex.dat中的数据
+    // OnInit2()函数调用LoadWallet()加载钱包地址，该函数默认wallet.dat中本节点的地址和收款方的地址。
+    // OnInit2()函数调用ReacceptWalletTransactions()处理孤立块。
+    // OnInit2()函数调用StartNode(strErrors)函数启动当前节点，该节点将监听本地默认端口8333，而后创建4个线程：
+		//从IRC中获取地址信息：_beginthread(ThreadIRCSeed, 0, NULL)
+		//接收其他节点的连接请求信息_beginthread(ThreadSocketHandler, 0, new SOCKET(hListenSocket))
+		//本节点和其他节点建立联系_beginthread(ThreadOpenConnections, 0, NULL)
+		//消息处理线程，处理发送和接收的消_beginthread(ThreadMessageHandler, 0, NULL)
+    // OnInit2()函数将启动ThreadBitcoinMiner线程，该线程用来区块的产生、交易的确认等等。
     int OnExit();
 
     // 2nd-level exception handling: we get all the exceptions occurring in any
