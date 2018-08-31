@@ -1,7 +1,3 @@
-// Copyright (c) 2009 Satoshi Nakamoto
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
-
 
 // secp160k1
 // const unsigned int PRIVATE_KEY_SIZE = 192;
@@ -71,7 +67,7 @@ public:
     {
         EC_KEY_free(pkey);
     }
-
+    // 创建秘钥
     void MakeNewKey()
     {
         if (!EC_KEY_generate_key(pkey))
@@ -85,7 +81,7 @@ public:
             return false;
         return true;
     }
-
+    // 私钥获取
     CPrivKey GetPrivKey() const
     {
         unsigned int nSize = i2d_ECPrivateKey(pkey, NULL);
@@ -105,7 +101,7 @@ public:
             return false;
         return true;
     }
-
+    // 公钥获取
     vector<unsigned char> GetPubKey() const
     {
         unsigned int nSize = i2o_ECPublicKey(pkey, NULL);
