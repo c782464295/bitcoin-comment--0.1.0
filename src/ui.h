@@ -1,8 +1,3 @@
-// Copyright (c) 2009 Satoshi Nakamoto
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
-
-
 
 
 DECLARE_EVENT_TYPE(wxEVT_CROSSTHREADCALL, -1)
@@ -36,6 +31,7 @@ class CMainFrame : public CMainFrameBase
 {
 protected:
     // Event handlers
+    // 事件处理
     void OnClose(wxCloseEvent& event);
     void OnMouseEvents(wxMouseEvent& event);
     void OnKeyDown(wxKeyEvent& event) { HandleCtrlA(event); }
