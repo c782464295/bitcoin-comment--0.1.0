@@ -1,4 +1,4 @@
-
+// 比特币客户端所有的序列化函数均在seriliaze.h中实现。其中，CDataStream类是数据序列化的核心结构。
 #include <vector>
 #include <map>
 #include <boost/type_traits/is_fundamental.hpp>
@@ -689,18 +689,19 @@ struct secure_allocator : public std::allocator<T>
 // Double ended buffer combining vector and stream-like interfaces.
 // >> and << read and write unformatted data using the above serialization templates.
 // Fills with data in linear time; some stringstream implementations take N^2 time.
+// CDataStream拥有一个字符类容器用来存放序列化之后的数据。它结合一个容器类型和一个流（stream）界面以处理数据。它使用6个成员函数实现这一功能
 //
 class CDataStream
 {
 protected:
     typedef vector<char> vector_type;
-    vector_type vch;
-    unsigned int nReadPos;
-    short state;
-    short exceptmask;
+    vector_type vch;// vch存储序列化后的数据
+    unsigned int nReadPos; // vch读取数据的起始位置
+    short state;// 错误标识。该变量用于指示在序列化/反序列化当中可能出现的错误。
+    short exceptmask;// 错误掩码。
 public:
-    int nType;
-    int nVersion;
+    int nType;// 其作用为通知CDataStream进行具体某种序列化操作
+    int nVersion;// 版本号
 
     typedef vector_type::allocator_type   allocator_type;
     typedef vector_type::size_type        size_type;
@@ -887,12 +888,15 @@ public:
     int GetVersion()             { return nVersion; }
     void ReadVersion()           { *this >> nVersion; }
     void WriteVersion()          { *this << nVersion; }
-
+    // 复制nSize个字符到一个由char* pch所指向的内存空间。
     CDataStream& read(char* pch, int nSize)
     {
-        // Read from the beginning of the buffer
+        // 从buffer的开头读入
         assert(nSize >= 0);
+	// 计算将要从vch读取的数据的结束位置
         unsigned int nReadPosNext = nReadPos + nSize;
+	// 如果结束位置比vch的大小更大，则当前没有足够的数据供读取。
+	// 在这种情况下，通过调用函数setState()将state设为ios::failbit，并将所有的零复制到pch。
         if (nReadPosNext >= vch.size())
         {
             if (nReadPosNext > vch.size())
@@ -901,6 +905,7 @@ public:
                 memset(pch, 0, nSize);
                 nSize = vch.size() - nReadPos;
             }
+	    // 否则，调用memcpy(pch, &vch[nReadPos], nSize)复制nSize个字符
             memcpy(pch, &vch[nReadPos], nSize);
             nReadPos = 0;
             vch.clear();
@@ -930,7 +935,7 @@ public:
         nReadPos = nReadPosNext;
         return (*this);
     }
-
+    // 它将由pch指向的nSize个字符附加到vch的结尾
     CDataStream& write(const char* pch, int nSize)
     {
         // Write to the end of the buffer
@@ -953,7 +958,7 @@ public:
         // Tells the size of the object if serialized to this stream
         return ::GetSerializeSize(obj, nType, nVersion);
     }
-
+    // CDataStream重载了操作符<< 和 >>用于序列化和反序列化。
     template<typename T>
     CDataStream& operator<<(const T& obj)
     {
