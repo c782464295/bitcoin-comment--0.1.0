@@ -1,7 +1,3 @@
-// Copyright (c) 2009 Satoshi Nakamoto
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
-
 #include "headers.h"
 #ifdef _MSC_VER
 #include <crtdbg.h>
@@ -18,7 +14,7 @@ DEFINE_EVENT_TYPE(wxEVT_TABLEUPDATED)
 DEFINE_EVENT_TYPE(wxEVT_TABLEDELETED)
 
 CMainFrame* pframeMain = NULL;
-map<string, string> mapAddressBook; // µØÖ·ºÍÃû³ÆµÄÓ³Éä£¬ÆäÖĞkeyÎªµØÖ·£¬valueÎªÃû³Æ
+map<string, string> mapAddressBook; // åœ°å€å’Œåç§°çš„æ˜ å°„ï¼Œå…¶ä¸­keyä¸ºåœ°å€ï¼Œvalueä¸ºåç§°
 
 
 void ThreadRequestProductDetails(void* parg);
@@ -2833,7 +2829,7 @@ void CEditReviewDialog::GetReview(CReview& review)
 // CMyApp
 //
 
-// Define a new application
+// å®šä¹‰ä¸€ä¸ªåº”ç”¨ï¼ˆApplicationï¼‰
 class CMyApp: public wxApp
 {
   public:
@@ -2857,7 +2853,7 @@ class CMyApp: public wxApp
 };
 
 IMPLEMENT_APP(CMyApp)
-
+//OnInitè°ƒç”¨OnInit2
 bool CMyApp::OnInit()
 {
     try
@@ -2943,7 +2939,7 @@ bool CMyApp::OnInit2()
     }
 
     //
-    // Parameters
+    // å‚æ•°
     //
     wxImage::AddHandler(new wxPNGHandler);
     map<string, string> mapArgs = ParseParameters(argc, argv);
@@ -2973,7 +2969,7 @@ bool CMyApp::OnInit2()
     }
 
     //
-    // Load data files
+    // åŠ è½½æ•°æ®æ–‡ä»¶
     //
     string strErrors;
     int64 nStart, nEnd;
@@ -3001,7 +2997,7 @@ bool CMyApp::OnInit2()
 
     printf("Done loading\n");
 
-        //// debug print
+        //// æ‰“å°debug ä¿¡æ¯
         printf("mapBlockIndex.size() = %d\n",   mapBlockIndex.size());
         printf("nBestHeight = %d\n",            nBestHeight);
         printf("mapKeys.size() = %d\n",         mapKeys.size());
@@ -3016,7 +3012,7 @@ bool CMyApp::OnInit2()
         return false;
     }
 
-	// ½«²»ÔÚ¿éÖĞµÄÇ®°ü½»Ò×·ÅÈëµ½¶ÔÓ¦µÄÄÚ´æ½»Ò×¶ÔÏómapTransactionsÖĞ
+	// å°†ä¸åœ¨å—ä¸­çš„é’±åŒ…äº¤æ˜“æ”¾å…¥åˆ°å¯¹åº”çš„å†…å­˜äº¤æ˜“å¯¹è±¡mapTransactionsä¸­
     // Add wallet transactions that aren't already in a block to mapTransactions
     ReacceptWalletTransactions();
 
@@ -3040,16 +3036,18 @@ bool CMyApp::OnInit2()
 
     //
     // Create the main frame window
+    // åˆ›å»ºä¸»çª—å£
     //
     {
         pframeMain = new CMainFrame(NULL);
-        pframeMain->Show();
+        //æ˜¾ç¤ºçª—å£ï¼Œè¿™æ—¶çª—å£è¢«æ˜¾ç¤º
+	pframeMain->Show();
 
-		// Æô¶¯¶ÔÓ¦½ÚµãµÄÁ´½Ó£¨½ÓÊÕÏûÏ¢ºÍ·¢ËÍÏûÏ¢£©
+	// å¯åŠ¨å¯¹åº”èŠ‚ç‚¹çš„é“¾æ¥ï¼ˆæ¥æ”¶æ¶ˆæ¯å’Œå‘é€æ¶ˆæ¯ï¼‰
         if (!StartNode(strErrors))
             wxMessageBox(strErrors);
 
-        if (fGenerateBitcoins) //½Úµã½øĞĞÍÚ¿ó
+        if (fGenerateBitcoins) //èŠ‚ç‚¹è¿›è¡ŒæŒ–çŸ¿
             if (_beginthread(ThreadBitcoinMiner, 0, NULL) == -1)
                 printf("Error: _beginthread(ThreadBitcoinMiner) failed\n");
 
@@ -3080,7 +3078,7 @@ bool CMyApp::OnInit2()
 
         if (mapArgs.count("/randsendtest"))
         {
-            if (!mapArgs["/randsendtest"].empty()) // Ëæ»ú·¢ËÍ²âÊÔ£¬¿ªÆôÏß³Ì½øĞĞ´¦Àí
+            if (!mapArgs["/randsendtest"].empty()) // éšæœºå‘é€æµ‹è¯•ï¼Œå¼€å¯çº¿ç¨‹è¿›è¡Œå¤„ç†
                 _beginthread(ThreadRandSendTest, 0, new string(mapArgs["/randsendtest"]));
             else
                 fRandSendTest = true;
