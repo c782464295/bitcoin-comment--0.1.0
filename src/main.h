@@ -46,7 +46,7 @@ extern CAddress addrIncoming;
 
 
 
-
+// 获得应用目录
 string GetAppDir();
 FILE* OpenBlockFile(unsigned int nFile, unsigned int nBlockPos, const char* pszMode="rb");
 FILE* AppendBlockFile(unsigned int& nFileRet);
@@ -277,7 +277,7 @@ public:
 // An output of a transaction.  It contains the public key that the next input
 // must be able to sign with to claim it.
 //
-//某笔交易的一个输出
+// 某笔交易的一个输出
 class CTxOut
 {
 public:
@@ -553,12 +553,12 @@ public:
         if (!filein)
             return error("CTransaction::ReadFromDisk() : OpenBlockFile failed");
 
-        // Read transaction
+        // 读取 transaction
         if (fseek(filein, pos.nTxPos, SEEK_SET) != 0)
             return error("CTransaction::ReadFromDisk() : fseek failed");
         filein >> *this;
 
-        // Return file pointer
+        // 返回文件 （file）指针（pointer）
         if (pfileRet)
         {
             if (fseek(filein, pos.nTxPos, SEEK_SET) != 0)
