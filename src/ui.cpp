@@ -1376,7 +1376,11 @@ void CSendDialog::OnButtonSend(wxCommandEvent& event)
         // Send to bitcoin address
         CScript scriptPubKey;
         scriptPubKey << OP_DUP << OP_HASH160 << hash160 << OP_EQUALVERIFY << OP_CHECKSIG;
-
+	//交易的发起位于SendMoney()函数，该函数实现了以下功能：
+		//新建交易CreateTransaction
+		//提交交易请求CommitTransactionSpent
+		//接受交易wtxNew.AcceptTransaction
+		//广播交易wtxNew.RelayWalletTransaction
         if (!SendMoney(scriptPubKey, nValue, wtx))
             return;
 
@@ -1752,7 +1756,7 @@ void CSendingDialog::OnReply3(CDataStream& vRecv)
 //////////////////////////////////////////////////////////////////////////////
 //
 // CYourAddressDialog
-//
+// 当前节点地址管理位于CYourAddressDialog类中，包含新建、重命名、复制等等方法，如下图所示
 
 CYourAddressDialog::CYourAddressDialog(wxWindow* parent, const string& strInitSelected) : CYourAddressDialogBase(parent)
 {
@@ -1881,7 +1885,7 @@ void CYourAddressDialog::OnClose(wxCloseEvent& event)
 //////////////////////////////////////////////////////////////////////////////
 //
 // CAddressBookDialog
-//
+// 收款方地址管理位于CAddressBookDialog类中，包含新建、重命名、复制等等方法
 
 CAddressBookDialog::CAddressBookDialog(wxWindow* parent, const wxString& strInitSelected, bool fSendingIn) : CAddressBookDialogBase(parent)
 {
