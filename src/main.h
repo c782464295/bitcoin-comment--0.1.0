@@ -1,6 +1,3 @@
-// Copyright (c) 2009 Satoshi Nakamoto
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
 class COutPoint;
 class CInPoint;
@@ -157,10 +154,10 @@ public:
 
     COutPoint() { SetNull(); }
     COutPoint(uint256 hashIn, unsigned int nIn) { hash = hashIn; n = nIn; }
-    IMPLEMENT_SERIALIZE( READWRITE(FLATDATA(*this)); )
+    IMPLEMENT_SERIALIZE( READWRITE(FLATDATA(*this)); )// 序列化操作
     void SetNull() { hash = 0; n = -1; }
     bool IsNull() const { return (hash == 0 && n == -1); }
-
+    //重载小于号
     friend bool operator<(const COutPoint& a, const COutPoint& b)
     {
         return (a.hash < b.hash || (a.hash == b.hash && a.n < b.n));
