@@ -1,14 +1,8 @@
-// Copyright (c) 2009 Satoshi Nakamoto
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
-
-///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Apr 16 2008)
-// http://www.wxformbuilder.org/
 //
-// PLEASE DO "NOT" EDIT THIS FILE!
-///////////////////////////////////////////////////////////////////////////
-
+// 这个文件是由wxFormBuilder自动生成的 (version Apr 16 2008)
+// http://www.wxformbuilder.org/ 
+// 不要编辑此文件
+//
 #ifndef __uibase__
 #define __uibase__
 
