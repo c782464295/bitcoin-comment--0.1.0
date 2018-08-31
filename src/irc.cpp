@@ -1,17 +1,15 @@
-// Copyright (c) 2009 Satoshi Nakamoto
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
 #include "headers.h"
 
 
 
-
+// 一字节方式对齐
 #pragma pack(1)
+// ircaddr结构体
 struct ircaddr
 {
-    int ip;
-    short port;
+    int ip;// ip
+    short port;// 端口
 };
 
 string EncodeAddress(const CAddress& addr)
@@ -43,7 +41,7 @@ bool DecodeAddress(string str, CAddress& addr)
 
 
 
-
+// 发送（套接字，发送的内容指针）
 static bool Send(SOCKET hSocket, const char* pszSend)
 {
     if (strstr(pszSend, "PONG") != pszSend)
@@ -150,6 +148,7 @@ void ThreadIRCSeed(void* parg)
         CAddress addrConnect(*(u_long*)phostent->h_addr_list[0], htons(6667));
 
         SOCKET hSocket;
+        // 进行连接，如果失败，则返回
         if (!ConnectSocket(addrConnect, hSocket))
         {
             printf("IRC connect failed\n");
@@ -248,7 +247,7 @@ void ThreadIRCSeed(void* parg)
 
 
 
-
+// 测试用
 #ifdef TEST
 int main(int argc, char *argv[])
 {
