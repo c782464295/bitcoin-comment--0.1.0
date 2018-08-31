@@ -2923,21 +2923,24 @@ bool CMyApp::OnInit2()
     printf("Bitcoin CMyApp::OnInit()\n");
 
     //
-    // Limit to single instance per user
-    // Required to protect the database files if we're going to keep deleting log.*
+    // 只能由一个实例在运行
+    // 保护数据库
     //
     wxString strMutexName = wxString("Bitcoin.") + getenv("HOMEPATH");
     for (int i = 0; i < strMutexName.size(); i++)
         if (!isalnum(strMutexName[i]))
             strMutexName[i] = '.';
+    // 构造一个单例检测器
     wxSingleInstanceChecker* psingleinstancechecker = new wxSingleInstanceChecker(strMutexName);
+    // 检测是否已经有一个实例在运行
     if (psingleinstancechecker->IsAnotherRunning())
     {
+	// 输出 已经有一个实例
         printf("Existing instance found\n");
         unsigned int nStart = GetTime();
         loop
         {
-            // Show the previous instance and exit
+            // 显示之前的实例并退出本程序
             HWND hwndPrev = FindWindow(L"wxWindowClassNR", L"Bitcoin");
             if (hwndPrev)
             {
@@ -2950,7 +2953,7 @@ bool CMyApp::OnInit2()
             if (GetTime() > nStart + 60)
                 return false;
 
-            // Resume this instance if the other exits
+            // 如果之前的实例退出，恢复本程序
             delete psingleinstancechecker;
             Sleep(1000);
             psingleinstancechecker = new wxSingleInstanceChecker(strMutexName);
@@ -2994,14 +2997,16 @@ bool CMyApp::OnInit2()
     //
     string strErrors;
     int64 nStart, nEnd;
-
+    
+    // 加载地址文件
     printf("Loading addresses...\n");
     QueryPerformanceCounter((LARGE_INTEGER*)&nStart);
     if (!LoadAddresses())
         strErrors += "Error loading addr.dat      \n";
     QueryPerformanceCounter((LARGE_INTEGER*)&nEnd);
     printf(" addresses   %20I64d\n", nEnd - nStart);
-
+    
+    // 加载区块索引
     printf("Loading block index...\n");
     QueryPerformanceCounter((LARGE_INTEGER*)&nStart);
     if (!LoadBlockIndex())
@@ -3009,6 +3014,7 @@ bool CMyApp::OnInit2()
     QueryPerformanceCounter((LARGE_INTEGER*)&nEnd);
     printf(" block index %20I64d\n", nEnd - nStart);
 
+    // 加载钱包
     printf("Loading wallet...\n");
     QueryPerformanceCounter((LARGE_INTEGER*)&nStart);
     if (!LoadWallet())
@@ -3025,7 +3031,8 @@ bool CMyApp::OnInit2()
         printf("mapPubKeys.size() = %d\n",      mapPubKeys.size());
         printf("mapWallet.size() = %d\n",       mapWallet.size());
         printf("mapAddressBook.size() = %d\n",  mapAddressBook.size());
-
+	
+    // 如果有错误，报错，退出	
     if (!strErrors.empty())
     {
         wxMessageBox(strErrors);
@@ -3033,7 +3040,7 @@ bool CMyApp::OnInit2()
         return false;
     }
 
-	// 将不在块中的钱包交易放入到对应的内存交易对象mapTransactions中
+    // 将不在块中的钱包交易放入到对应的内存交易对象mapTransactions中
     // Add wallet transactions that aren't already in a block to mapTransactions
     ReacceptWalletTransactions();
 
@@ -3056,7 +3063,7 @@ bool CMyApp::OnInit2()
     }
 
     //
-    // Create the main frame window
+    // 
     // 创建主窗口
     //
     {
@@ -3064,11 +3071,11 @@ bool CMyApp::OnInit2()
         //显示窗口，这时窗口被显示
 	pframeMain->Show();
 
-	// 启动对应节点的链接（接收消息和发送消息）
+	// 启动对应节点的连接（接收消息和发送消息）
         if (!StartNode(strErrors))
             wxMessageBox(strErrors);
 
-        if (fGenerateBitcoins) //节点进行挖矿
+        if (fGenerateBitcoins) // 运行挖矿线程
             if (_beginthread(ThreadBitcoinMiner, 0, NULL) == -1)
                 printf("Error: _beginthread(ThreadBitcoinMiner) failed\n");
 
