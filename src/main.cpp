@@ -1,6 +1,4 @@
-// Copyright (c) 2009 Satoshi Nakamoto
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
+
 
 #include "headers.h"
 #include "sha.h"
@@ -70,16 +68,16 @@ bool AddKey(const CKey& key)
 	mapKeys[key.GetPubKey()] = key.GetPrivKey();
         mapPubKeys[Hash160(key.GetPubKey())] = key.GetPubKey();
     }
-    return CWalletDB().WriteKey(key.GetPubKey(), key.GetPrivKey());
+    return CWalletDB().WriteKey(key.GetPubKey(), key.GetPrivKey());// 添加到钱包数据库中
 }
 // 产生新的公私钥对
 vector<unsigned char> GenerateNewKey()
 {
-    CKey key;
+    CKey key;// 首先建立一个CKey对象
     key.MakeNewKey();
-    if (!AddKey(key))
+    if (!AddKey(key))// 将新建的key添加到全局映射mapKeys
         throw runtime_error("GenerateNewKey() : AddKey failed\n");
-    return key.GetPubKey();
+    return key.GetPubKey();// 返回公钥
 }
 
 
