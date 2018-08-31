@@ -35,7 +35,7 @@ public:
 typedef vector<unsigned char> CPrivKey;
 
 
-
+// Key类
 class CKey
 {
 protected:
