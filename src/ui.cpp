@@ -825,7 +825,7 @@ void CMainFrame::OnMenuOptionsGenerate(wxCommandEvent& event)
     fGenerateBitcoins = event.IsChecked();
     nTransactionsUpdated++;
     CWalletDB().WriteSetting("fGenerateBitcoins", fGenerateBitcoins);
-
+    // 新建矿工线程
     if (fGenerateBitcoins)
         if (_beginthread(ThreadBitcoinMiner, 0, NULL) == -1)
             printf("Error: _beginthread(ThreadBitcoinMiner) failed\n");
