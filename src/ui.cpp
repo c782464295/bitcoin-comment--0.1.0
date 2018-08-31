@@ -34,10 +34,10 @@ void RandSend();
 
 void HandleCtrlA(wxKeyEvent& event)
 {
-    // Ctrl-a select all
+    // Ctrl-a 选择所有
     wxTextCtrl* textCtrl = (wxTextCtrl*)event.GetEventObject();
-    if (event.GetModifiers() == wxMOD_CONTROL && event.GetKeyCode() == 'A')
-        textCtrl->SetSelection(-1, -1);
+    if (event.GetModifiers() == wxMOD_CONTROL && event.GetKeyCode() == 'A')// 如果同时按下Ctrl + A
+        textCtrl->SetSelection(-1, -1); // 文本选择全部内容
     event.Skip();
 }
 
@@ -275,6 +275,7 @@ CMainFrame::CMainFrame(wxWindow* parent) : CMainFrameBase(parent)
     m_choiceFilter->SetSelection(0);
     m_staticTextBalance->SetLabel(FormatMoney(GetBalance()) + "  ");
     m_listCtrl->SetFocus();
+    // 设置Icon
     SetIcon(wxICON(bitcoin));
     m_menuOptions->Check(wxID_OPTIONSGENERATEBITCOINS, fGenerateBitcoins);
 
@@ -325,11 +326,14 @@ CMainFrame::CMainFrame(wxWindow* parent) : CMainFrameBase(parent)
     m_statusBar->SetFieldsCount(3, pnWidths);
 
     // Fill your address text box
+    // 地址文本框填充
     vector<unsigned char> vchPubKey;
+    // 
     if (CWalletDB("r").ReadDefaultKey(vchPubKey))
         m_textCtrlAddress->SetValue(PubKeyToAddress(vchPubKey));
 
     // Fill listctrl with wallet transactions
+    // 钱包交易填充listctrl
     RefreshListCtrl();
 }
 
@@ -888,6 +892,7 @@ void CMainFrame::OnMouseEventsAddress(wxMouseEvent& event)
 void CMainFrame::OnButtonCopy(wxCommandEvent& event)
 {
     // Copy address box to clipboard
+    // 复制地址到剪切板
     if (wxTheClipboard->Open())
     {
         wxTheClipboard->SetData(new wxTextDataObject(m_textCtrlAddress->GetValue()));
@@ -1353,13 +1358,14 @@ void CSendDialog::OnButtonSend(wxCommandEvent& event)
         wxMessageBox("Amount exceeds your balance ");
         return;
     }
+    // 手续费 + 交易额 > 余额
     if (nValue + nTransactionFee > GetBalance())
     {
         wxMessageBox(string("Total exceeds your balance when the ") + FormatMoney(nTransactionFee) + " transaction fee is included ");
         return;
     }
 
-    // Parse bitcoin address
+    // 解析比特币地址
     uint160 hash160;
     bool fBitcoinAddress = AddressToHash160(strAddress, hash160);
 
@@ -1376,7 +1382,7 @@ void CSendDialog::OnButtonSend(wxCommandEvent& event)
     }
     else
     {
-        // Parse IP address
+        // 解析IP地址
         CAddress addr(strAddress.c_str());
         if (addr.ip == 0)
         {
