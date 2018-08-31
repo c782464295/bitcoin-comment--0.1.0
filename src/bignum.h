@@ -20,7 +20,7 @@ public:
 class CAutoBN_CTX
 {
 protected:
-    BN_CTX* pctx;
+    BN_CTX* pctx;//大数上下文（Big-Num-Context）
     BN_CTX* operator=(BN_CTX* pnew) { return pctx = pnew; }
 
 public:
