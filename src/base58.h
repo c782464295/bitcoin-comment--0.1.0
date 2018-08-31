@@ -4,10 +4,10 @@
 //特殊符号的存在会使得双击复制失效，所以不使用除了数字和字母的符号
 //
 
-
+//base58所包含的字符
 static const char* pszBase58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
-
+//编码为base58
 inline string EncodeBase58(const unsigned char* pbegin, const unsigned char* pend)
 {
     CAutoBN_CTX pctx;
@@ -19,11 +19,11 @@ inline string EncodeBase58(const unsigned char* pbegin, const unsigned char* pen
     vector<unsigned char> vchTmp(pend-pbegin+1, 0);
     reverse_copy(pbegin, pend, vchTmp.begin());
 
-    // Convert little endian data to bignum
+    // 把小端数据转为大数（bignum）
     CBigNum bn;
     bn.setvch(vchTmp);
 
-    // Convert bignum to string
+    // bignum转为string
     string str;
     str.reserve((pend - pbegin) * 138 / 100 + 1);
     CBigNum dv;
@@ -108,7 +108,7 @@ inline bool DecodeBase58(const string& str, vector<unsigned char>& vchRet)
 
 inline string EncodeBase58Check(const vector<unsigned char>& vchIn)
 {
-    // add 4-byte hash check to the end
+    // 在末尾添加4个字节的hash校验码
     vector<unsigned char> vch(vchIn);
     uint256 hash = Hash(vch.begin(), vch.end());
     vch.insert(vch.end(), (unsigned char*)&hash, (unsigned char*)&hash + 4);
@@ -148,7 +148,7 @@ static const unsigned char ADDRESSVERSION = 0;
 
 inline string Hash160ToAddress(uint160 hash160)
 {
-    // add 1-byte version number to the front
+    // 在前面添加一字节的版本号
     vector<unsigned char> vch(1, ADDRESSVERSION);
     vch.insert(vch.end(), UBEGIN(hash160), UEND(hash160));
     return EncodeBase58Check(vch);
