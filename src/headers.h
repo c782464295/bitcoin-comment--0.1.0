@@ -1,6 +1,4 @@
-// Copyright (c) 2009 Satoshi Nakamoto
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
+
 
 #ifdef _MSC_VER
 #pragma warning(disable:4786)
@@ -55,17 +53,17 @@ using namespace boost;
 
 
 
-#include "serialize.h"
-#include "uint256.h"
-#include "util.h"
-#include "key.h"
-#include "bignum.h"
-#include "base58.h"
-#include "script.h"
-#include "db.h"
-#include "net.h"
-#include "irc.h"
-#include "main.h"
-#include "market.h"
-#include "uibase.h"
-#include "ui.h"
+#include "serialize.h"//序列化
+#include "uint256.h"//
+#include "util.h"//hash函数等
+#include "key.h"//公钥私钥、验证、签名
+#include "bignum.h"//大数
+#include "base58.h"//base58
+#include "script.h"//脚本
+#include "db.h"//数据库
+#include "net.h"//
+#include "irc.h"//
+#include "main.h"//
+#include "market.h"//
+#include "uibase.h"//页面布局
+#include "ui.h"//绑定操作
