@@ -10,6 +10,7 @@ class CReview;
 class CAddress;
 class CWalletTx;
 
+// 地址map
 extern map<string, string> mapAddressBook;
 extern bool fClient;
 
@@ -54,6 +55,7 @@ protected:
         // Key
         CDataStream ssKey(SER_DISK);
         ssKey.reserve(1000);
+        // 序列化
         ssKey << key;
         Dbt datKey(&ssKey[0], ssKey.size());
 
