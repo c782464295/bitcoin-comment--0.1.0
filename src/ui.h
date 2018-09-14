@@ -38,14 +38,20 @@ protected:
     void OnIdle(wxIdleEvent& event);
     void OnPaint(wxPaintEvent& event);
     void OnPaintListCtrl(wxPaintEvent& event);
+    // 菜单-退出
     void OnMenuFileExit(wxCommandEvent& event);
+    // 菜单-挖矿
     void OnMenuOptionsGenerate(wxCommandEvent& event);
     void OnMenuOptionsOptions(wxCommandEvent& event);
+    // 菜单-更多（About）
     void OnMenuHelpAbout(wxCommandEvent& event);
+    // 按钮-发送
     void OnButtonSend(wxCommandEvent& event);
+    // 按钮-地址
     void OnButtonAddressBook(wxCommandEvent& event);
     void OnSetFocusAddress(wxFocusEvent& event);
     void OnMouseEventsAddress(wxMouseEvent& event);
+    // 按钮-复制
     void OnButtonCopy(wxCommandEvent& event);
     void OnButtonChange(wxCommandEvent& event);
     void OnListColBeginDrag(wxListEvent& event);
@@ -55,7 +61,7 @@ protected:
     void OnListItemActivatedOrdersReceived(wxListEvent& event);
 	
 public:
-    /** Constructor */
+    /** 构造函数 */
     CMainFrame(wxWindow* parent);
     ~CMainFrame();
 
@@ -119,7 +125,7 @@ public:
 };
 
 
-
+// 发送
 class CSendDialog : public CSendDialogBase
 {
 protected:
@@ -153,7 +159,7 @@ public:
     CSendingDialog(wxWindow* parent, const CAddress& addrIn, int64 nPriceIn, const CWalletTx& wtxIn);
     ~CSendingDialog();
 
-    // State
+    // 状态
     CAddress addr;
     int64 nPrice;
     CWalletTx wtx;
