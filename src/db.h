@@ -331,6 +331,7 @@ private:
 class CAddrDB : public CDB
 {
 public:
+    // 默认打开addr.dat
     CAddrDB(const char* pszMode="r+", bool fTxn=false) : CDB("addr.dat", pszMode, fTxn) { }
 private:
     CAddrDB(const CAddrDB&);
