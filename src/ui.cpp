@@ -180,6 +180,7 @@ void AddToMyProducts(CProduct product)
 //
 
 set<void*> setCallbackAvailable;
+// 临界区 互斥锁
 CCriticalSection cs_setCallbackAvailable;
 
 void AddCallbackAvailable(void* p)
