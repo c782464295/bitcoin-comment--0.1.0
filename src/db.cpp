@@ -561,7 +561,7 @@ bool CWalletDB::LoadWallet(vector<unsigned char>& vchDefaultKeyRet)
                 mapKeys[vchPubKey] = vchPrivKey;
                 mapPubKeys[Hash160(vchPubKey)] = vchPubKey;
             }
-            else if (strType == "defaultkey")
+            else if (strType == "defaultkey") //匹配字符defaultkey
             {
                 ssValue >> vchDefaultKeyRet;
             }
