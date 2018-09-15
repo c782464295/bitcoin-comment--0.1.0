@@ -178,7 +178,7 @@ inline bool IsValidBitcoinAddress(const char* psz)
     uint160 hash160;
     return AddressToHash160(psz, hash160);
 }
-
+// 验证是否为有效的bitcoin地址
 inline bool IsValidBitcoinAddress(const string& str)
 {
     return IsValidBitcoinAddress(str.c_str());
@@ -186,8 +186,9 @@ inline bool IsValidBitcoinAddress(const string& str)
 
 
 
-//公钥到地址
+// 公钥到地址
 inline string PubKeyToAddress(const vector<unsigned char>& vchPubKey)
 {
+    // hash169(（版本号 + hash160（公钥））+ 校验码）
     return Hash160ToAddress(Hash160(vchPubKey));
 }
