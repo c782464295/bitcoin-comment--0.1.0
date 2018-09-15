@@ -411,7 +411,7 @@ bool CAddrDB::LoadAddresses()
 {
     CRITICAL_BLOCK(cs_mapAddresses)
     {
-        // Load user provided addresses
+        // 加载用户自定义地址信息（位于addr.txt）
         CAutoFile filein = fopen("addr.txt", "rt");
         if (filein)
         {
@@ -435,7 +435,7 @@ bool CAddrDB::LoadAddresses()
 
         loop
         {
-            // Read next record
+            // 读取下一个记录
             CDataStream ssKey;
             CDataStream ssValue;
             int ret = ReadAtCursor(pcursor, ssKey, ssValue);
@@ -444,7 +444,7 @@ bool CAddrDB::LoadAddresses()
             else if (ret != 0)
                 return false;
 
-            // Unserialize
+            // 反序列化
             string strType;
             ssKey >> strType;
             if (strType == "addr")
