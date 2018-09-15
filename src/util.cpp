@@ -1,6 +1,3 @@
-// Copyright (c) 2009 Satoshi Nakamoto
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
 #include "headers.h"
 
@@ -326,7 +323,7 @@ uint64 GetRand(uint64 nMax)
 // note: NTP isn't implemented yet, so until then we just use the median
 //  of other nodes clocks to correct ours.
 //
-// ·µ»ØµÄµ¥Î»ÎªÃë
+// è¿”å›çš„å•ä½ä¸ºç§’
 int64 GetTime()
 {
     return time(NULL);
@@ -334,17 +331,17 @@ int64 GetTime()
 
 static int64 nTimeOffset = 0;
 
-// »ñÈ¡¶ÔÓ¦µÄµ÷ÕûÊ±¼ä£ºµ±Ç°Ê±¼ä + Ê±¼äÆ«ÒÆ
+// è·å–å¯¹åº”çš„è°ƒæ•´æ—¶é—´ï¼šå½“å‰æ—¶é—´ + æ—¶é—´åç§»
 int64 GetAdjustedTime()
 {
     return GetTime() + nTimeOffset;
 }
-// Ôö¼ÓÊ±¼äÊı¾İ
+// å¢åŠ æ—¶é—´æ•°æ®
 void AddTimeData(unsigned int ip, int64 nTime)
 {
-    int64 nOffsetSample = nTime - GetTime(); // Ê±¼äÆ«ÒÆÑù±¾
+    int64 nOffsetSample = nTime - GetTime(); // æ—¶é—´åç§»æ ·æœ¬
 
-    // Ignore duplicates ºöÂÔÖØ¸´ÒÑ¾­ÖªµÀµÄip
+    // Ignore duplicates å¿½ç•¥é‡å¤å·²ç»çŸ¥é“çš„ip
     static set<unsigned int> setKnown;
     if (!setKnown.insert(ip).second)
         return;
@@ -355,13 +352,13 @@ void AddTimeData(unsigned int ip, int64 nTime)
         vTimeOffsets.push_back(0);
     vTimeOffsets.push_back(nOffsetSample);
     printf("Added time data, samples %d, ip %08x, offset %+I64d (%+I64d minutes)\n", vTimeOffsets.size(), ip, vTimeOffsets.back(), vTimeOffsets.back()/60);
-   // Ê±¼äÆ«ÒÆÑù±¾¶ÔÓ¦µÄ´óĞ¡Òª´óÓÚ5£¬ÇÒÊÇÆæÊı£¨ÒòÎªÒªÈ¡¶ÔÓ¦µÄÖĞÎ»Êı£©
+   // æ—¶é—´åç§»æ ·æœ¬å¯¹åº”çš„å¤§å°è¦å¤§äº5ï¼Œä¸”æ˜¯å¥‡æ•°ï¼ˆå› ä¸ºè¦å–å¯¹åº”çš„ä¸­ä½æ•°ï¼‰
 	if (vTimeOffsets.size() >= 5 && vTimeOffsets.size() % 2 == 1)
     {
         sort(vTimeOffsets.begin(), vTimeOffsets.end());
         int64 nMedian = vTimeOffsets[vTimeOffsets.size()/2];
         nTimeOffset = nMedian;
-        if ((nMedian > 0 ? nMedian : -nMedian) > 5 * 60) // ´óÓÚ5·ÖÖÓ
+        if ((nMedian > 0 ? nMedian : -nMedian) > 5 * 60) // å¤§äº5åˆ†é’Ÿ
         {
             // Only let other nodes change our clock so far before we
             // go to the NTP servers
