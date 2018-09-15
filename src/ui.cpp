@@ -820,7 +820,7 @@ void CMainFrame::OnMenuFileExit(wxCommandEvent& event)
 {
     Close(true);
 }
-
+// Genetate菜单被点击
 void CMainFrame::OnMenuOptionsGenerate(wxCommandEvent& event)
 {
     fGenerateBitcoins = event.IsChecked();
