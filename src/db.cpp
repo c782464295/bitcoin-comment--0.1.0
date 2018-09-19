@@ -12,11 +12,15 @@
 //
 // CDB
 //
-
+// 互斥锁
 static CCriticalSection cs_db;
+// 数据库环境初始化
 static bool fDbEnvInit = false;
 //DbEnv dbenv(0);
+// 定义一个环境变量
+// 在环境打开之前，可调用形式为dbenv->set_XXX()的若干函数设置环境
 DbEnv dbenv((u_int32_t)0);
+// 文件使用计数
 static map<string, int> mapFileUseCount;
 
 class CDBInit
@@ -27,8 +31,10 @@ public:
     }
     ~CDBInit()
     {
+        // 如果环境初始化
         if (fDbEnvInit)
         {
+            // 关闭环境
             dbenv.close(0);
             fDbEnvInit = false;
         }
@@ -47,15 +53,18 @@ CDB::CDB(const char* pszFile, const char* pszMode, bool fTxn) : pdb(NULL)
     bool fCreate = strchr(pszMode, 'c');
     bool fReadOnly = (!strchr(pszMode, '+') && !strchr(pszMode, 'w'));
     unsigned int nFlags = DB_THREAD;
+    
     if (fCreate)
-        nFlags |= DB_CREATE;
+        nFlags |= DB_CREATE; // 创建
     else if (fReadOnly)
-        nFlags |= DB_RDONLY;
+        nFlags |= DB_RDONLY; // 只读
     if (!fReadOnly || fTxn)
         nFlags |= DB_AUTO_COMMIT;
-
+    
+    // 临界区
     CRITICAL_BLOCK(cs_db)
     {
+        // 如果未初始化
         if (!fDbEnvInit)
         {
             //调用main.cpp中的GetAppDir（）函数获得目录
@@ -65,7 +74,8 @@ CDB::CDB(const char* pszFile, const char* pszMode, bool fTxn) : pdb(NULL)
             //若该目录不存在则创建
             _mkdir(strLogDir.c_str());
             printf("dbenv.open strAppDir=%s\n", strAppDir.c_str());
-
+            // 设置各项环境属性
+            // 设置log路径
             dbenv.set_lg_dir(strLogDir.c_str());
             dbenv.set_lg_max(10000000);
             dbenv.set_lk_max_locks(10000);
@@ -82,12 +92,15 @@ CDB::CDB(const char* pszFile, const char* pszMode, bool fTxn) : pdb(NULL)
                              DB_PRIVATE    |
                              DB_RECOVER,
                              0);
+            // 如果环境变量设置失败，返回错误码
             if (ret > 0)
                 throw runtime_error(strprintf("CDB() : error %d opening database environment\n", ret));
+            // 初始化成功
             fDbEnvInit = true;
         }
 
         strFile = pszFile;
+        // 文件使用计数+1
         ++mapFileUseCount[strFile];
     }
     //创建新的BDB操作对象pdb
@@ -106,23 +119,28 @@ CDB::CDB(const char* pszFile, const char* pszMode, bool fTxn) : pdb(NULL)
         delete pdb;
         pdb = NULL;
         CRITICAL_BLOCK(cs_db)
+            // 文件计数-1
             --mapFileUseCount[strFile];
         strFile = "";
+        // 抛出错误
         throw runtime_error(strprintf("CDB() : can't open database file %s, error %d\n", pszFile, ret));
     }
-
+    // 创建时版本不存在，写入版本
     if (fCreate && !Exists(string("version")))
         WriteVersion(VERSION);
-
+    // 随机种子生成
     RandAddSeed();
 }
 //关闭数据库
 void CDB::Close()
 {
+    // pdb都没有了，还怎么关闭
     if (!pdb)
         return;
+    // 如果事务池还是事务未处理，则废弃
     if (!vTxn.empty())
         vTxn.front()->abort();
+    // 清空事务池
     vTxn.clear();
     pdb->close(0);
     delete pdb;
@@ -238,7 +256,7 @@ bool CTxDB::ReadOwnerTxes(uint160 hash160, int nMinHeight, vector<CTransaction>&
         else if (ret != 0)
             return false;
 
-        // Unserialize
+        // 反序列化
         string strType;
         uint160 hashItem;
         CDiskTxPos pos;
@@ -246,7 +264,7 @@ bool CTxDB::ReadOwnerTxes(uint160 hash160, int nMinHeight, vector<CTransaction>&
         int nItemHeight;
         ssValue >> nItemHeight;
 
-        // Read transaction
+        // 读取事务
         if (strType != "owner" || hashItem != hash160)
             break;
         if (nItemHeight >= nMinHeight)
@@ -432,10 +450,10 @@ bool CAddrDB::LoadAddresses()
         Dbc* pcursor = GetCursor();
         if (!pcursor)
             return false;
-
+        // 读取所有记录
         loop
         {
-            // 读取下一个记录
+            
             CDataStream ssKey;
             CDataStream ssValue;
             int ret = ReadAtCursor(pcursor, ssKey, ssValue);
@@ -455,7 +473,7 @@ bool CAddrDB::LoadAddresses()
             }
         }
 
-        //// debug print
+        //// debug 打印
         printf("mapAddresses:\n");
         foreach(const PAIRTYPE(vector<unsigned char>, CAddress)& item, mapAddresses)
             item.second.print();
@@ -592,6 +610,7 @@ bool LoadWallet()
     if (mapKeys.count(vchDefaultKey))
     {
         // Set keyUser
+        // 定义在main.cpp  keyUser是CKey的实例
         keyUser.SetPubKey(vchDefaultKey);
         keyUser.SetPrivKey(mapKeys[vchDefaultKey]);
     }
