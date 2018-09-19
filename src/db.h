@@ -206,6 +206,7 @@ protected:
     }
 
 public:
+    // 开始事务  事务内的操作，要么完全处理，要么不处理
     bool TxnBegin()
     {
         if (!pdb)
@@ -217,7 +218,7 @@ public:
         vTxn.push_back(ptxn);
         return true;
     }
-
+    // 事务提交
     bool TxnCommit()
     {
         if (!pdb)
@@ -228,7 +229,7 @@ public:
         vTxn.pop_back();
         return (ret == 0);
     }
-
+    // 事务终止
     bool TxnAbort()
     {
         if (!pdb)
@@ -239,13 +240,13 @@ public:
         vTxn.pop_back();
         return (ret == 0);
     }
-
+    // 读取版本
     bool ReadVersion(int& nVersion)
     {
         nVersion = 0;
         return Read(string("version"), nVersion);
     }
-
+    // 写入版本
     bool WriteVersion(int nVersion)
     {
         return Write(string("version"), nVersion);
@@ -288,7 +289,7 @@ public:
 
 
 
-//记录比特币客户端中的用户数据
+// 记录比特币客户端中的用户数据
 class CReviewDB : public CDB
 {
 public:
@@ -314,7 +315,7 @@ public:
 
 
 
-//不详
+// 不详
 class CMarketDB : public CDB
 {
 public:
@@ -327,7 +328,7 @@ private:
 
 
 
-//地址数据
+// 地址数据
 class CAddrDB : public CDB
 {
 public:
@@ -424,9 +425,10 @@ public:
 
     bool LoadWallet(vector<unsigned char>& vchDefaultKeyRet);
 };
-
+// 加载钱包
 bool LoadWallet();
 
+// 设置钱包自定义名称
 inline bool SetAddressBookName(const string& strAddress, const string& strName)
 {
     return CWalletDB().WriteName(strAddress, strName);
