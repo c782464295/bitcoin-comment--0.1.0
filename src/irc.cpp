@@ -136,11 +136,12 @@ bool RecvUntil(SOCKET hSocket, const char* psz1, const char* psz2=NULL, const ch
 
 
 
-
+// 重启IRCSeed服务标识
 bool fRestartIRCSeed = false;
 // IRC线程
 void ThreadIRCSeed(void* parg)
 {
+    // 无线循环直到退出
     loop
     {
         // 连接IRC服务器，服务器名称为chat.freenode.net
@@ -160,25 +161,26 @@ void ThreadIRCSeed(void* parg)
             closesocket(hSocket);
             return;
         }
-
+        // CAddress addrLocalHost在net.cpp中定义
         string strMyName = EncodeAddress(addrLocalHost);
-
+        // 是否为本地地址 192.168....
         if (!addrLocalHost.IsRoutable())
             strMyName = strprintf("x%u", GetRand(1000000000));
-
+        // 如果不是本地地址，strMyName为外网地址，否则为随机数
         Send(hSocket, strprintf("NICK %s\r", strMyName.c_str()).c_str());
         Send(hSocket, strprintf("USER %s 8 * : %s\r", strMyName.c_str(), strMyName.c_str()).c_str());
-
+        // 004 表示断开连接
         if (!RecvUntil(hSocket, " 004 "))
         {
             closesocket(hSocket);
             return;
         }
         Sleep(500);
-
+        // 加入#bitcoin频道
         Send(hSocket, "JOIN #bitcoin\r");
+        // who命令 得到频道用户在线列表
         Send(hSocket, "WHO #bitcoin\r");
-
+        
         while (!fRestartIRCSeed)
         {
             string strLine;
@@ -252,6 +254,7 @@ void ThreadIRCSeed(void* parg)
 int main(int argc, char *argv[])
 {
     WSADATA wsadata;
+    // 初始化winsock
     if (WSAStartup(MAKEWORD(2,2), &wsadata) != NO_ERROR)
     {
         printf("Error at WSAStartup()\n");
