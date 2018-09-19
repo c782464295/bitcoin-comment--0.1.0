@@ -17,7 +17,7 @@ string EncodeAddress(const CAddress& addr)
     struct ircaddr tmp;
     tmp.ip    = addr.ip;
     tmp.port  = addr.port;
-
+    // 对本机ip地址及端口号进行base58编码，随后在得到的结果前加上字符”u”，得到本机IRC nickname
     vector<unsigned char> vch(UBEGIN(tmp), UEND(tmp));
     return string("u") + EncodeBase58Check(vch);
 }
@@ -167,7 +167,9 @@ void ThreadIRCSeed(void* parg)
         if (!addrLocalHost.IsRoutable())
             strMyName = strprintf("x%u", GetRand(1000000000));
         // 如果不是本地地址，strMyName为外网地址，否则为随机数
+        // 发送昵称信息
         Send(hSocket, strprintf("NICK %s\r", strMyName.c_str()).c_str());
+        // 注册账户信息 用户名、密码均为昵称
         Send(hSocket, strprintf("USER %s 8 * : %s\r", strMyName.c_str(), strMyName.c_str()).c_str());
         // 004 表示断开连接
         if (!RecvUntil(hSocket, " 004 "))
