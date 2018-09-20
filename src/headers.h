@@ -54,16 +54,16 @@ using namespace boost;
 
 
 #include "serialize.h"//序列化
-#include "uint256.h"//
+#include "uint256.h"//无符号256位整数运算相关
 #include "util.h"//hash函数等
 #include "key.h"//公钥私钥、验证、签名
-#include "bignum.h"//大数
-#include "base58.h"//base58
+#include "bignum.h"//大数运算相关
+#include "base58.h"//base58编码相关
 #include "script.h"//脚本
 #include "db.h"//数据库
-#include "net.h"//
-#include "irc.h"//
-#include "main.h"//
-#include "market.h"//
+#include "net.h"//网络，获取IP地址，节点连接及广播消息
+#include "irc.h"//irc远程中继聊天服务，主要用于发现节点
+#include "main.h"//主程序
+#include "market.h"// 未知
 #include "uibase.h"//页面布局
-#include "ui.h"//绑定操作
+#include "ui.h"//绑定按钮事件等
