@@ -1,6 +1,3 @@
-// Copyright (c) 2009 Satoshi Nakamoto
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
 class CMessageHeader;
 class CAddress;
@@ -9,7 +6,7 @@ class CRequestTracker;
 class CNode;
 
 
-// Ä¬ÈÏ¶Ë¿ÚºÅ
+// é»˜è®¤ç«¯å£å·
 static const unsigned short DEFAULT_PORT = htons(8333);
 static const unsigned int PUBLISH_HOPS = 5;
 enum
@@ -51,17 +48,17 @@ void CheckForShutdown(int n);
 // The message start string is designed to be unlikely to occur in normal data.
 // The characters are rarely used upper ascii, not valid as UTF-8, and produce
 // a large 4-byte int at any alignment.
-// ËùÓĞµÄÏûÏ¢¶¼¹²ÓĞµÄÏûÏ¢Í·
+// æ‰€æœ‰çš„æ¶ˆæ¯éƒ½å…±æœ‰çš„æ¶ˆæ¯å¤´
 static const char pchMessageStart[4] = { 0xf9, 0xbe, 0xb4, 0xd9 };
 
-// ÏûÏ¢Í·
+// æ¶ˆæ¯å¤´
 class CMessageHeader
 {
 public:
     enum { COMMAND_SIZE=12 };
     char pchMessageStart[sizeof(::pchMessageStart)];
-    char pchCommand[COMMAND_SIZE]; // ÃüÁî
-    unsigned int nMessageSize; // ÏûÏ¢ÄÚÈİµÄ´óĞ¡
+    char pchCommand[COMMAND_SIZE]; // å‘½ä»¤
+    unsigned int nMessageSize; // æ¶ˆæ¯å†…å®¹çš„å¤§å°
 
     CMessageHeader()
     {
@@ -93,7 +90,7 @@ public:
             return string(pchCommand, pchCommand + COMMAND_SIZE);
     }
 
-    // ÅĞ¶Ï¶ÔÓ¦µÄÏûÏ¢Í·ÊÇ·ñÓĞĞ§
+    // åˆ¤æ–­å¯¹åº”çš„æ¶ˆæ¯å¤´æ˜¯å¦æœ‰æ•ˆ
     bool IsValid()
     {
         // Check start string
@@ -103,7 +100,7 @@ public:
         // Check the command string for errors
         for (char* p1 = pchCommand; p1 < pchCommand + COMMAND_SIZE; p1++)
         {
-            // Óöµ½Ò»¸öÎª0ºó£¬Æä¶ÔÓ¦Ö®ºó¶¼Ó¦¸ÃÎª0
+            // é‡åˆ°ä¸€ä¸ªä¸º0åï¼Œå…¶å¯¹åº”ä¹‹åéƒ½åº”è¯¥ä¸º0
             if (*p1 == 0)
             {
                 // Must be all zeros after the first zero
@@ -132,7 +129,7 @@ public:
 
 
 static const unsigned char pchIPv4[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff };
-// µØÖ·ĞÅÏ¢
+// åœ°å€ä¿¡æ¯
 class CAddress
 {
 public:
@@ -145,7 +142,7 @@ public:
     unsigned int nTime;
 
     // memory only
-    unsigned int nLastFailed; // ¶ÔÓ¦Õâ¸öµØÖ·×î½üÁ¬½ÓÊ§°ÜÊ±¼ä
+    unsigned int nLastFailed; // å¯¹åº”è¿™ä¸ªåœ°å€æœ€è¿‘è¿æ¥å¤±è´¥æ—¶é—´
 
     CAddress()
     {
@@ -301,14 +298,14 @@ public:
 
 
 
-// ÏûÏ¢ÀàĞÍ
+// æ¶ˆæ¯ç±»å‹
 enum
 {
-    MSG_TX = 1, // ½»Ò×ÏûÏ¢
-    MSG_BLOCK, // ¿éĞÅÏ¢
+    MSG_TX = 1, // äº¤æ˜“æ¶ˆæ¯
+    MSG_BLOCK, // å—ä¿¡æ¯
     MSG_REVIEW, //
-    MSG_PRODUCT, // ²úÆ·ÏûÏ¢
-    MSG_TABLE,// ±í
+    MSG_PRODUCT, // äº§å“æ¶ˆæ¯
+    MSG_TABLE,// è¡¨
 };
 
 static const char* ppszTypeName[] =
@@ -434,43 +431,43 @@ extern CAddress addrProxy;
 
 
 
-// ½Úµã¶¨Òå
+// èŠ‚ç‚¹å®šä¹‰
 class CNode
 {
 public:
     // socket
     uint64 nServices;
-    SOCKET hSocket;
-    CDataStream vSend; // ·¢ËÍ»º´æÇø
-    CDataStream vRecv; // ½ÓÊÕ»º³åÇø
-    CCriticalSection cs_vSend;
-    CCriticalSection cs_vRecv;
-    unsigned int nPushPos;// Ö¸¶¨·¢ËÍÇøÒÑ¾­·¢ËÍµÄÎ»ÖÃ
-    CAddress addr;
-    int nVersion; // ½Úµã¶ÔÓ¦µÄ°æ±¾£¬Èç¹û½Úµã°æ±¾Îª0£¬ÔòÏûÏ¢·¢ËÍ²»³öÈ¥
-    bool fClient;// ±È½ÏÊÇ·ñÊÇ¿Í»§¶Ë£¬Èç¹ûÊÇ¿Í»§¶ËÔòĞèÒªÇø¿éµÄÍ·²¿½øĞĞĞ£Ñé¾Í¿ÉÒÔÁË,²»ĞèÒª±£´æÕû¸öÇø¿éµÄÄÚÈİ
+    SOCKET hSocket; // socketå®ä¾‹
+    CDataStream vSend; // å‘é€ç¼“å­˜åŒº
+    CDataStream vRecv; // æ¥æ”¶ç¼“å†²åŒº
+    CCriticalSection cs_vSend; // å‘é€äº’æ–¥é”
+    CCriticalSection cs_vRecv; // æ¥å—äº’æ–¥é”
+    unsigned int nPushPos;// æŒ‡å®šå‘é€åŒºå·²ç»å‘é€çš„ä½ç½®
+    CAddress addr; // åœ°å€
+    int nVersion; // èŠ‚ç‚¹å¯¹åº”çš„ç‰ˆæœ¬ï¼Œå¦‚æœèŠ‚ç‚¹ç‰ˆæœ¬ä¸º0ï¼Œåˆ™æ¶ˆæ¯å‘é€ä¸å‡ºå»
+    bool fClient;// æ¯”è¾ƒæ˜¯å¦æ˜¯å®¢æˆ·ç«¯ï¼Œå¦‚æœæ˜¯å®¢æˆ·ç«¯åˆ™éœ€è¦åŒºå—çš„å¤´éƒ¨è¿›è¡Œæ ¡éªŒå°±å¯ä»¥äº†,ä¸éœ€è¦ä¿å­˜æ•´ä¸ªåŒºå—çš„å†…å®¹
     bool fInbound;
-    bool fNetworkNode; // ÉèÖÃ¶ÔÓ¦µÄ½ÚµãÎªÍøÂç½Úµã£¬ÊÇÒòÎª´Ó¶ÔÓ¦µÄ±¾µØ½ÚµãÁĞ±íÖĞÃ»ÓĞ²éÑ¯µ½
-    bool fDisconnect; // ¶Ë¿ÚÁ´½ÓµÄ±ê¼Ç
+    bool fNetworkNode; // è®¾ç½®å¯¹åº”çš„èŠ‚ç‚¹ä¸ºç½‘ç»œèŠ‚ç‚¹ï¼Œæ˜¯å› ä¸ºä»å¯¹åº”çš„æœ¬åœ°èŠ‚ç‚¹åˆ—è¡¨ä¸­æ²¡æœ‰æŸ¥è¯¢åˆ°
+    bool fDisconnect; // ç«¯å£é“¾æ¥çš„æ ‡è¯†
 protected:
-    int nRefCount; // Ê¹ÓÃ¼¼ÊõÆ÷
+    int nRefCount; // ä½¿ç”¨è®¡æ•°å™¨
 public:
-    int64 nReleaseTime; // ½ÚµãÊÍ·ÅµÄÊ±¼ä
+    int64 nReleaseTime; // èŠ‚ç‚¹é‡Šæ”¾çš„æ—¶é—´
     map<uint256, CRequestTracker> mapRequests;
-    CCriticalSection cs_mapRequests;
+    CCriticalSection cs_mapRequests; // äº’æ–¥é”
 
-    // flood ºé·º£ºµØÖ·ÏûÏ¢µÄÃüÁîÎªaddr
-    vector<CAddress> vAddrToSend; // ÏûÏ¢ĞèÒª·¢ËÍ¶ÔÓ¦µÄµØÖ·£¬¶ÔĞèÒª·¢ËÍµÄµØÖ·½øĞĞÒÑÖªµØÖ·µÄ¼¯ºÏ¹ıÂËÖ®ºóÔÙ·¢ËÍ
-    set<CAddress> setAddrKnown; // ÒÑÖªµØÖ·µÄ¼¯ºÏ
+    // flood æ´ªæ³›ï¼šåœ°å€æ¶ˆæ¯çš„å‘½ä»¤ä¸ºaddr
+    vector<CAddress> vAddrToSend; // æ¶ˆæ¯éœ€è¦å‘é€å¯¹åº”çš„åœ°å€ï¼Œå¯¹éœ€è¦å‘é€çš„åœ°å€è¿›è¡Œå·²çŸ¥åœ°å€çš„é›†åˆè¿‡æ»¤ä¹‹åå†å‘é€
+    set<CAddress> setAddrKnown; // å·²çŸ¥åœ°å€çš„é›†åˆ
 
-    // inventory based relay  »ùÓÚ×ª²¥µÄ¿â´æ£º¿â´æÏûÏ¢µÄÃüÁîÎªinv
-    set<CInv> setInventoryKnown; // ÒÑÖª¿â´æµÄ¼¯ºÏ
+    // inventory based relay  åŸºäºè½¬æ’­çš„åº“å­˜ï¼šåº“å­˜æ¶ˆæ¯çš„å‘½ä»¤ä¸ºinv
+    set<CInv> setInventoryKnown; // å·²çŸ¥åº“å­˜çš„é›†åˆ
     set<CInv> setInventoryKnown2;
-    vector<CInv> vInventoryToSend; //¿â´æ×¼±¸·¢ËÍµÄ¼¯ºÏ£¬¶Ô¿â´æ×¼±¸·¢ËÍµÄ¼¯ºÏ¸ù¾İÒÑÖª¿â´æµÄ¼¯ºÏ½øĞĞ¹ıÂËÖ®ºóÔÚ·¢ËÍ
+    vector<CInv> vInventoryToSend; //åº“å­˜å‡†å¤‡å‘é€çš„é›†åˆï¼Œå¯¹åº“å­˜å‡†å¤‡å‘é€çš„é›†åˆæ ¹æ®å·²çŸ¥åº“å­˜çš„é›†åˆè¿›è¡Œè¿‡æ»¤ä¹‹ååœ¨å‘é€
     CCriticalSection cs_inventory;
-    multimap<int64, CInv> mapAskFor; // ×ÉÑ¯ÇëÇóÓ³Éä£¬keyÎªÊ±¼ä£¨µ¥Î»µ½Î¢Ãë£©
+    multimap<int64, CInv> mapAskFor; // å’¨è¯¢è¯·æ±‚æ˜ å°„ï¼Œkeyä¸ºæ—¶é—´ï¼ˆå•ä½åˆ°å¾®ç§’ï¼‰
 
-    // publish and subscription
+    // æ¨é€å’Œè®¢é˜…
     vector<char> vfSubscribe;
 
 
@@ -483,7 +480,7 @@ public:
         nPushPos = -1;
         addr = addrIn;
         nVersion = 0;
-        fClient = false; // set by version message
+        fClient = false; // ç”±versionæ¶ˆæ¯è¿›è¡Œè®¾ç½®
         fInbound = fInboundIn;
         fNetworkNode = false;
         fDisconnect = false;
@@ -494,7 +491,7 @@ public:
         // Push a version message
         /// when NTP implemented, change to just nTime = GetAdjustedTime()
         int64 nTime = (fInbound ? GetAdjustedTime() : GetTime());
-		// ´´½¨½ÚµãµÄÊ±ºò»á·¢ËÍ½Úµã°æ±¾µÄÏûÏ¢£ºÏûÏ¢ÃüÁîÎªversion,ºóÃæÊÇÏûÏ¢·¢ËÍµÄÄÚÈİ
+		// åˆ›å»ºèŠ‚ç‚¹çš„æ—¶å€™ä¼šå‘é€èŠ‚ç‚¹ç‰ˆæœ¬çš„æ¶ˆæ¯ï¼šæ¶ˆæ¯å‘½ä»¤ä¸ºversion,åé¢æ˜¯æ¶ˆæ¯å‘é€çš„å†…å®¹
         PushMessage("version", VERSION, nLocalServices, nTime, addr);
     }
 
@@ -509,39 +506,39 @@ private:
     void operator=(const CNode&);
 public:
 
-    // ×¼±¸ÊÍ·ÅÁ´½Ó
+    // å‡†å¤‡é‡Šæ”¾é“¾æ¥
     bool ReadyToDisconnect()
     {
         return fDisconnect || GetRefCount() <= 0;
     }
-    // »ñÈ¡¶ÔÓ¦µÄÓ¦ÓÃ¼ÆÊı
+    // è·å–å¯¹åº”çš„åº”ç”¨è®¡æ•°
     int GetRefCount()
     {
         return max(nRefCount, 0) + (GetTime() < nReleaseTime ? 1 : 0);
     }
-    // Ôö¼Ó¶ÔÓ¦µÄÓ¦ÓÃ¼ÆÊı
+    // å¢åŠ å¯¹åº”çš„åº”ç”¨è®¡æ•°
     void AddRef(int64 nTimeout=0)
     {
         if (nTimeout != 0)
-            nReleaseTime = max(nReleaseTime, GetTime() + nTimeout); // ÍÆ³Ù½Úµã¶ÔÓ¦µÄÊÍ·ÅÊ±¼ä
+            nReleaseTime = max(nReleaseTime, GetTime() + nTimeout); // æ¨è¿ŸèŠ‚ç‚¹å¯¹åº”çš„é‡Šæ”¾æ—¶é—´
         else
             nRefCount++;
     }
-    // ½ÚµãÊÍ·Å¶ÔÓ¦£¬Ôò¶ÔÓ¦µÄÓ¦ÓÃ¼ÆÊı¼õ1
+    // èŠ‚ç‚¹é‡Šæ”¾å¯¹åº”ï¼Œåˆ™å¯¹åº”çš„åº”ç”¨è®¡æ•°å‡1
     void Release()
     {
         nRefCount--;
     }
 
 
-    // Ôö¼Ó¿â´æ
+    // å¢åŠ åº“å­˜
     void AddInventoryKnown(const CInv& inv)
     {
         CRITICAL_BLOCK(cs_inventory)
             setInventoryKnown.insert(inv);
     }
 
-    // ÍÆËÍ¿â´æ
+    // æ¨é€åº“å­˜
     void PushInventory(const CInv& inv)
     {
         CRITICAL_BLOCK(cs_inventory)
@@ -551,34 +548,35 @@ public:
 
     void AskFor(const CInv& inv)
     {
-        // We're using mapAskFor as a priority queue, ÓÅÏÈ¼¶¶ÓÁĞ
-        // the key is the earliest time the request can be sent £¨key¶ÔÓ¦µÄÊÇÇëÇó×îÔç±»·¢ËÍµÄÊ±¼ä£©
+        // We're using mapAskFor as a priority queue, ä¼˜å…ˆçº§é˜Ÿåˆ—
+        // the key is the earliest time the request can be sent ï¼ˆkeyå¯¹åº”çš„æ˜¯è¯·æ±‚æœ€æ—©è¢«å‘é€çš„æ—¶é—´ï¼‰
         int64& nRequestTime = mapAlreadyAskedFor[inv];
         printf("askfor %s  %I64d\n", inv.ToString().c_str(), nRequestTime);
 
-		// È·±£²»ÒªÊ±¼äË÷ÒıÈÃÊÂÇéÔÚÍ¬Ò»¸öË³Ğò
+		// ç¡®ä¿ä¸è¦æ—¶é—´ç´¢å¼•è®©äº‹æƒ…åœ¨åŒä¸€ä¸ªé¡ºåº
         // Make sure not to reuse time indexes to keep things in the same order
-        int64 nNow = (GetTime() - 1) * 1000000; // µ¥Î»µ½Î¢Ãë
+        int64 nNow = (GetTime() - 1) * 1000000; // å•ä½åˆ°å¾®ç§’
         static int64 nLastTime;
-        nLastTime = nNow = max(nNow, ++nLastTime);//Èç¹ûµ÷ÓÃºÜ¿ìµÄ»°£¬¿ÉÒÔ±£Ö¤¶ÔÓ¦µÄnlastTime++ÊÇµÄ¶ÔÓ¦µÄÊ±¼ä²»Ò»Ñù
+        nLastTime = nNow = max(nNow, ++nLastTime);//å¦‚æœè°ƒç”¨å¾ˆå¿«çš„è¯ï¼Œå¯ä»¥ä¿è¯å¯¹åº”çš„nlastTime++æ˜¯çš„å¯¹åº”çš„æ—¶é—´ä¸ä¸€æ ·
 
-        // Each retry is 2 minutes after the last£¬Ã»ÓĞµ½2·ÖÖÓ£¬Ôò¶ÔÓ¦µÄnRequesttime¶ÔÓ¦µÄÖµ¶¼Ò»Ñù
+        // Each retry is 2 minutes after the lastï¼Œæ²¡æœ‰åˆ°2åˆ†é’Ÿï¼Œåˆ™å¯¹åº”çš„nRequesttimeå¯¹åº”çš„å€¼éƒ½ä¸€æ ·
         nRequestTime = max(nRequestTime + 2 * 60 * 1000000, nNow);
         mapAskFor.insert(make_pair(nRequestTime, inv));
     }
 
 
-
+    // å‡†å¤‡å‘é€æ¶ˆæ¯
     void BeginMessage(const char* pszCommand)
     {
-        EnterCriticalSection(&cs_vSend);
+        // è¿›å…¥ä¸´ç•ŒåŒº
+	EnterCriticalSection(&cs_vSend);
         if (nPushPos != -1)
             AbortMessage();
         nPushPos = vSend.size();
         vSend << CMessageHeader(pszCommand, 0);
         printf("sending: %-12s ", pszCommand);
     }
-
+    // ä¸¢å¼ƒæ¶ˆæ¯
     void AbortMessage()
     {
         if (nPushPos == -1)
@@ -588,7 +586,8 @@ public:
         LeaveCriticalSection(&cs_vSend);
         printf("(aborted)\n");
     }
-	// ĞŞ¸ÄÏûÏ¢Í·ÖĞ¶ÔÓ¦µÄÏûÏ¢´óĞ¡×Ö¶Î
+    
+    // ä¿®æ”¹æ¶ˆæ¯å¤´ä¸­å¯¹åº”çš„æ¶ˆæ¯å¤§å°å­—æ®µ
     void EndMessage()
     {
         extern int nDropMessagesTest;
@@ -602,7 +601,7 @@ public:
         if (nPushPos == -1)
             return;
 
-		// ĞŞ¸ÄÏûÏ¢Í·ÖĞ¶ÔÓ¦µÄÏûÏ¢´óĞ¡
+	// ä¿®æ”¹æ¶ˆæ¯å¤´ä¸­å¯¹åº”çš„æ¶ˆæ¯å¤§å°
         // Patch in the size
         unsigned int nSize = vSend.size() - nPushPos - sizeof(CMessageHeader);
         memcpy((char*)&vSend[nPushPos] + offsetof(CMessageHeader, nMessageSize), &nSize, sizeof(nSize));
@@ -613,7 +612,8 @@ public:
         printf("\n");
 
         nPushPos = -1;
-        LeaveCriticalSection(&cs_vSend);
+        // é€€å‡ºä¸´ç•ŒåŒº
+	LeaveCriticalSection(&cs_vSend);
     }
 
     void EndMessageAbortIfEmpty()
@@ -636,10 +636,11 @@ public:
 
 
 
-
+    // å‘é€æ¶ˆæ¯
     void PushMessage(const char* pszCommand)
     {
-        try
+        // å°è¯•å‘é€ï¼Œå¤±è´¥åˆ™ä¸¢å¼ƒ
+	try
         {
             BeginMessage(pszCommand);
             EndMessage();
@@ -651,7 +652,7 @@ public:
         }
     }
 
-	// ½«ÏûÏ¢·¢ËÍ¶ÔÓ¦½ÚµãµÄvsendÊôĞÔÖĞ
+    // å°†æ¶ˆæ¯å‘é€å¯¹åº”èŠ‚ç‚¹çš„vsendå±æ€§ä¸­
     template<typename T1>
     void PushMessage(const char* pszCommand, const T1& a1)
     {
@@ -771,10 +772,10 @@ public:
 
 
 
-// ×ª²¥¿â´æ
+// è½¬æ’­åº“å­˜
 inline void RelayInventory(const CInv& inv)
 {
-	// ½«´Ë½ÚµãÏàÁ¬µÄËùÓĞ½Úµã½øĞĞ×ª²¥´ËĞÅÏ¢
+    // å°†æ­¤èŠ‚ç‚¹ç›¸è¿çš„æ‰€æœ‰èŠ‚ç‚¹è¿›è¡Œè½¬æ’­æ­¤ä¿¡æ¯
     // Put on lists to offer to the other nodes
     CRITICAL_BLOCK(cs_vNodes)
         foreach(CNode* pnode, vNodes)
@@ -806,7 +807,7 @@ inline void RelayMessage<>(const CInv& inv, const CDataStream& ss)
         mapRelay[inv] = ss;
         vRelayExpiration.push_back(make_pair(GetTime() + 15 * 60, inv));
     }
-	// ½Úµã½øĞĞ¿â´æ×ª²¥
+	// èŠ‚ç‚¹è¿›è¡Œåº“å­˜è½¬æ’­
     RelayInventory(inv);
 }
 
