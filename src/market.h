@@ -1,7 +1,5 @@
-// Copyright (c) 2009 Satoshi Nakamoto
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
+// 双击列表显示交易具体细节，对应CReviewDB读出的数据 
 class CUser;
 class CReview;
 class CProduct;
