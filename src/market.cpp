@@ -1,6 +1,4 @@
-// Copyright (c) 2009 Satoshi Nakamoto
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
+
 
 #include "headers.h"
 
@@ -196,7 +194,7 @@ bool AddAtomsAndPropagate(uint256 hashUserStart, const vector<unsigned short>& v
 
 bool CReview::AcceptReview()
 {
-    // Timestamp
+    // 时间戳
     nTime = GetTime();
 
     // Check signature
