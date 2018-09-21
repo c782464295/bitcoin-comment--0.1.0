@@ -144,6 +144,9 @@ void ThreadIRCSeed(void* parg)
     // 无线循环直到退出
     loop
     {
+        // 虽然说p2p网络没有服务器,但是必须存在知名节点,否则无从启动网络.
+        // 在bitcoin的后续版本，初始节点被硬编码到了源码中
+        // 在这个版本，使用的是IRC来获取
         // 连接IRC服务器，服务器名称为chat.freenode.net
         struct hostent* phostent = gethostbyname("chat.freenode.net");
         CAddress addrConnect(*(u_long*)phostent->h_addr_list[0], htons(6667));
