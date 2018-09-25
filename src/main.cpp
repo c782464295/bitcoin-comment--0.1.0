@@ -19,7 +19,7 @@ unsigned int nTransactionsUpdated = 0; // 每次对mapTransactions中交易进�
 map<COutPoint, CInPoint> mapNextTx;// 如果对应的区块已经放入到主链中，则对应的区块交易应该要从本节点保存的交易内存池中删除
 
 map<uint256, CBlockIndex*> mapBlockIndex; // 块索引信息：其中key对应的block的hash值
-const uint256 hashGenesisBlock("0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
+const uint256 hashGenesisBlock("0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");// 创世块hash
 CBlockIndex* pindexGenesisBlock = NULL; // 基础块对应的索引，也即是创世区块对应的索引
 int nBestHeight = -1; // 最长链对应的区块个数，从创世区块到当前主链最后一个区块，中间隔了多少个区块
 uint256 hashBestChain = 0; // 最长链最后一个区块对应的hash
