@@ -1,7 +1,10 @@
-// Copyright (c) 2009 Satoshi Nakamoto
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
-
+//
+// 整体的运行流程
+// 1. VerifySignature 传入脚本Script(这个脚本是把 scriptPubKey 和 scriptSig) 拼接在一起的一个总的Script
+// 2. 创建一个 stack(栈)，本质是一个vector。
+// 3. 整个的执行过程就是，首先执行了 scriptSig，那么这个scriptSig就会在栈中留下一系列的状态和数据，
+//    而这些状态和数据是为了配对scriptSig中的状态和数据(也就是为了配对问题的答案)。
+//
 #include "headers.h"
 
 bool CheckSig(vector<unsigned char> vchSig, vector<unsigned char> vchPubKey, CScript scriptCode, const CTransaction& txTo, unsigned int nIn, int nHashType);
@@ -48,8 +51,8 @@ bool EvalScript(const CScript& script, const CTransaction& txTo, unsigned int nI
     CScript::const_iterator pc = script.begin();
     CScript::const_iterator pend = script.end();
     CScript::const_iterator pbegincodehash = script.begin();
-    vector<bool> vfExec;
-    vector<valtype> stack;
+    vector<bool> vfExec;  // 这个是暂时记录 栈中执行if判断结果的地方
+    vector<valtype> stack; // 栈就是这个，而valtype是一个定义 typedef vector<unsigned char> valtype;
     vector<valtype> altstack;
     if (pvStackRet)
         pvStackRet->clear();
@@ -909,7 +912,7 @@ bool CheckSig(vector<unsigned char> vchSig, vector<unsigned char> vchPubKey, CSc
 
 
 
-// ��֤���׶�Ӧ�Ĺ�Կ�Ƿ����������ģ��
+// 验证交易对应的公钥是否满足下面的模板
 bool Solver(const CScript& scriptPubKey, vector<pair<opcodetype, valtype> >& vSolutionRet)
 {
     // Templates
@@ -971,7 +974,7 @@ bool Solver(const CScript& scriptPubKey, vector<pair<opcodetype, valtype> >& vSo
     return false;
 }
 
-// �ж϶�Ӧ�Ĺ�Կ��mapKeys�Ƿ���ڶ�Ӧ��˽Կ���������˵���˽����ǽڵ㱾���Լ��Ľ���
+// 判断对应的公钥在mapKeys是否存在对应的私钥，如果存在说明此交易是节点本身自己的交易
 bool Solver(const CScript& scriptPubKey, uint256 hash, int nHashType, CScript& scriptSigRet)
 {
     scriptSigRet.clear();
@@ -1024,7 +1027,7 @@ bool Solver(const CScript& scriptPubKey, uint256 hash, int nHashType, CScript& s
     return true;
 }
 
-// �ж���������ǲ��ǽڵ㱾���Լ��Ľ���
+// 判断这个交易是不是节点本身自己的交易
 bool IsMine(const CScript& scriptPubKey)
 {
     CScript scriptSig;
@@ -1122,6 +1125,6 @@ bool VerifySignature(const CTransaction& txFrom, const CTransaction& txTo, unsig
 
     if (txin.prevout.hash != txFrom.GetHash())
         return false;
-
+    // 注意这里把 txin 的 scriptSig 和 txout 的 scriptPubKey 拼接在一起
     return EvalScript(txin.scriptSig + CScript(OP_CODESEPARATOR) + txout.scriptPubKey, txTo, nIn, nHashType);
 }
