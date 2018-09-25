@@ -26,6 +26,7 @@ bool CastToBool(const valtype& vch)
     return (CBigNum(vch) != bnZero);
 }
 
+// 设置为统一大小
 void MakeSameSize(valtype& vch1, valtype& vch2)
 {
     // Lengthen the shorter one
@@ -41,14 +42,20 @@ void MakeSameSize(valtype& vch1, valtype& vch2)
 // Script is a stack machine (like Forth) that evaluates a predicate
 // returning a bool indicating valid or not.  There are no loops.
 //
+// Script就像一个基于栈的虚拟机，
+// 解析字节并返回真或假，表明有效或无效
+// 不存在循环（考虑到恶意代码无限循环）
+// 但以太坊智能合约拥有循环，靠gas大小来限制循环
+//
 #define stacktop(i)  (stack.at(stack.size()+(i)))
 #define altstacktop(i)  (altstack.at(altstack.size()+(i)))
 
+// 核心就是这里的解析Script，返回bool
 bool EvalScript(const CScript& script, const CTransaction& txTo, unsigned int nIn, int nHashType,
                 vector<vector<unsigned char> >* pvStackRet)
 {
     CAutoBN_CTX pctx;
-    CScript::const_iterator pc = script.begin();
+    CScript::const_iterator pc = script.begin(); // pc在此用于程序计数器的作用
     CScript::const_iterator pend = script.end();
     CScript::const_iterator pbegincodehash = script.begin();
     vector<bool> vfExec;  // 这个是暂时记录 栈中执行if判断结果的地方
@@ -57,7 +64,8 @@ bool EvalScript(const CScript& script, const CTransaction& txTo, unsigned int nI
     if (pvStackRet)
         pvStackRet->clear();
 
-
+    // 一直解析，直到末尾
+    // 类似于计算机执行指令
     while (pc < pend)
     {
         bool fExec = !count(vfExec.begin(), vfExec.end(), false);
@@ -65,6 +73,7 @@ bool EvalScript(const CScript& script, const CTransaction& txTo, unsigned int nI
         //
         // Read instruction
         //
+        // 读取位于pc处的指令
         opcodetype opcode;
         valtype vchPushValue;
         if (!script.GetOp(pc, opcode, vchPushValue))
@@ -73,7 +82,8 @@ bool EvalScript(const CScript& script, const CTransaction& txTo, unsigned int nI
         if (fExec && opcode <= OP_PUSHDATA4)
             stack.push_back(vchPushValue);
         else if (fExec || (OP_IF <= opcode && opcode <= OP_ENDIF))
-        switch (opcode)
+        // 命令处理,执行
+            switch (opcode)
         {
             //
             // Push value
@@ -657,6 +667,7 @@ bool EvalScript(const CScript& script, const CTransaction& txTo, unsigned int nI
             case OP_SHA1:
             case OP_SHA256:
             case OP_HASH160:
+            // hash256命令
             case OP_HASH256:
             {
                 // (in -- hash)
@@ -805,6 +816,7 @@ bool EvalScript(const CScript& script, const CTransaction& txTo, unsigned int nI
 
     if (pvStackRet)
         *pvStackRet = stack;
+    // 栈空，返回假；否则，返回 CastToBool(stack.back())
     return (stack.empty() ? false : CastToBool(stack.back()));
 }
 
