@@ -1,6 +1,3 @@
-// Copyright (c) 2009 Satoshi Nakamoto
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
 class CTransaction;
 
@@ -16,7 +13,7 @@ enum
 
 enum opcodetype
 {
-    // push value
+    // 压入数值指令
     OP_0=0,
     OP_FALSE=OP_0,
     OP_PUSHDATA1=76,
@@ -42,7 +39,7 @@ enum opcodetype
     OP_15,
     OP_16,
 
-    // control
+    // 控制指令
     OP_NOP,
     OP_VER,
     OP_IF,
@@ -75,14 +72,14 @@ enum opcodetype
     OP_SWAP,
     OP_TUCK,
 
-    // splice ops
+    // 拼接操作
     OP_CAT,
     OP_SUBSTR,
     OP_LEFT,
     OP_RIGHT,
     OP_SIZE,
 
-    // bit logic
+    // 位操作
     OP_INVERT,
     OP_AND,
     OP_OR,
@@ -92,7 +89,7 @@ enum opcodetype
     OP_RESERVED1,
     OP_RESERVED2,
 
-    // numeric
+    // 数操作
     OP_1ADD,
     OP_1SUB,
     OP_2MUL,
@@ -124,7 +121,7 @@ enum opcodetype
 
     OP_WITHIN,
 
-    // crypto
+    // 加密
     OP_RIPEMD160,
     OP_SHA1,
     OP_SHA256,
@@ -137,11 +134,11 @@ enum opcodetype
     OP_CHECKMULTISIGVERIFY,
 
 
-    // multi-byte opcodes
+    // 多字节操作
     OP_SINGLEBYTE_END = 0xF0,
     OP_DOUBLEBYTE_BEGIN = 0xF000,
 
-    // template matching params
+    // 模板匹配参数
     OP_PUBKEY,
     OP_PUBKEYHASH,
 
@@ -161,7 +158,7 @@ inline const char* GetOpName(opcodetype opcode)
 {
     switch (opcode)
     {
-    // push value
+    // 压入值
     case OP_0                      : return "0";
     case OP_PUSHDATA1              : return "OP_PUSHDATA1";
     case OP_PUSHDATA2              : return "OP_PUSHDATA2";
@@ -185,7 +182,7 @@ inline const char* GetOpName(opcodetype opcode)
     case OP_15                     : return "15";
     case OP_16                     : return "16";
 
-    // control
+    // 控制
     case OP_NOP                    : return "OP_NOP";
     case OP_VER                    : return "OP_VER";
     case OP_IF                     : return "OP_IF";
@@ -197,7 +194,7 @@ inline const char* GetOpName(opcodetype opcode)
     case OP_VERIFY                 : return "OP_VERIFY";
     case OP_RETURN                 : return "OP_RETURN";
 
-    // stack ops
+    // 栈操作
     case OP_TOALTSTACK             : return "OP_TOALTSTACK";
     case OP_FROMALTSTACK           : return "OP_FROMALTSTACK";
     case OP_2DROP                  : return "OP_2DROP";
@@ -218,14 +215,14 @@ inline const char* GetOpName(opcodetype opcode)
     case OP_SWAP                   : return "OP_SWAP";
     case OP_TUCK                   : return "OP_TUCK";
 
-    // splice ops
+    // 拼接操作
     case OP_CAT                    : return "OP_CAT";
     case OP_SUBSTR                 : return "OP_SUBSTR";
     case OP_LEFT                   : return "OP_LEFT";
     case OP_RIGHT                  : return "OP_RIGHT";
     case OP_SIZE                   : return "OP_SIZE";
 
-    // bit logic
+    // 位操作
     case OP_INVERT                 : return "OP_INVERT";
     case OP_AND                    : return "OP_AND";
     case OP_OR                     : return "OP_OR";
@@ -235,7 +232,7 @@ inline const char* GetOpName(opcodetype opcode)
     case OP_RESERVED1              : return "OP_RESERVED1";
     case OP_RESERVED2              : return "OP_RESERVED2";
 
-    // numeric
+    // 数操作
     case OP_1ADD                   : return "OP_1ADD";
     case OP_1SUB                   : return "OP_1SUB";
     case OP_2MUL                   : return "OP_2MUL";
@@ -264,7 +261,7 @@ inline const char* GetOpName(opcodetype opcode)
     case OP_MAX                    : return "OP_MAX";
     case OP_WITHIN                 : return "OP_WITHIN";
 
-    // crypto
+    // 加密
     case OP_RIPEMD160              : return "OP_RIPEMD160";
     case OP_SHA1                   : return "OP_SHA1";
     case OP_SHA256                 : return "OP_SHA256";
@@ -278,7 +275,7 @@ inline const char* GetOpName(opcodetype opcode)
 
 
 
-    // multi-byte opcodes
+    // 多字节操作
     case OP_SINGLEBYTE_END         : return "OP_SINGLEBYTE_END";
     case OP_DOUBLEBYTE_BEGIN       : return "OP_DOUBLEBYTE_BEGIN";
     case OP_PUBKEY                 : return "OP_PUBKEY";
