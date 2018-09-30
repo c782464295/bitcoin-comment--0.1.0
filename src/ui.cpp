@@ -263,12 +263,12 @@ CDataStream GetStreamFromEvent(const wxCommandEvent& event)
 //
 // CMainFrame
 //
-
+// 窗口主进程
 CMainFrame::CMainFrame(wxWindow* parent) : CMainFrameBase(parent)
 {
     Connect(wxEVT_CROSSTHREADCALL, wxCommandEventHandler(CMainFrame::OnCrossThreadCall), NULL, this);
 
-    // Init
+    // 初始化
     fRefreshListCtrl = false;
     fRefreshListCtrlRunning = false;
     fOnSetFocusAddress = false;
@@ -342,7 +342,7 @@ CMainFrame::~CMainFrame()
 {
     pframeMain = NULL;
 }
-
+// 关闭
 void Shutdown(void* parg)
 {
     static CCriticalSection cs_Shutdown;
@@ -378,7 +378,7 @@ void CMainFrame::OnListColBeginDrag(wxListEvent& event)
      if (event.GetColumn() <= 1 && !fDebug)
         event.Veto();
 }
-
+// list插入
 void CMainFrame::InsertLine(bool fNew, int nIndex, uint256 hashKey, string strSort, const wxString& str2, const wxString& str3, const wxString& str4, const wxString& str5, const wxString& str6)
 {
     string str0 = strSort;
