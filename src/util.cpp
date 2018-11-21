@@ -7,7 +7,7 @@ bool fDebug = false;
 
 
 
-
+// 初始化openssl的多线程支持
 // Init openssl library multithreading support
 static HANDLE* lock_cs;
 
@@ -25,7 +25,9 @@ class CInit
 public:
     CInit()
     {
-        // Init openssl library multithreading support
+        
+	// 初始化openssl的多线程支持
+	// Init openssl library multithreading support
         lock_cs = (HANDLE*)OPENSSL_malloc(CRYPTO_num_locks() * sizeof(HANDLE));
         for (int i = 0; i < CRYPTO_num_locks(); i++)
             lock_cs[i] = CreateMutex(NULL,FALSE,NULL);
@@ -162,7 +164,7 @@ bool error(const char* format, ...)
     return false;
 }
 
-
+// 打印异常
 void PrintException(std::exception* pex, const char* pszThread)
 {
     char pszModule[260];
