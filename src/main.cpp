@@ -2495,6 +2495,8 @@ bool BitcoinMiner()
                     break;
                 if (!fGenerateBitcoins)
                     break;
+		// 在新建区块的时候，要设置对应区块的时间，由于是P2P的，没有中心化节点能够获得对应的时间，
+		// 所以需要从对应的区块链中区块的时间中取中位数，然后和当前时间取最大值，对应的代码就是：
                 tmp.block.nTime = pblock->nTime = max(pindexPrev->GetMedianTimePast()+1, GetAdjustedTime());
             }
         }
