@@ -38,7 +38,7 @@ void CheckForShutdown(int n);
 
 
 
-
+// 节点和节点之间通过发送消息命令来相互通信的，下面是对应的消息命令格式：
 //
 // Message header
 //  (4) message start
